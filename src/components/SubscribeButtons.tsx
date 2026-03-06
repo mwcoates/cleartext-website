@@ -2,7 +2,7 @@
 
 // Update these URLs once your show is live on each platform
 const SPOTIFY_URL =
-  "https://open.spotify.com/show/cleartext"; // TODO: replace with real Spotify URL
+  "https://open.spotify.com/show/5aYVJheLNNZzkN3WnPXQSu";
 const APPLE_URL =
   "https://podcasts.apple.com/us/podcast/cleartext/id1881767338";
 const RSS_URL =
