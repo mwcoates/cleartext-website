@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { getEpisodes, LOGO_URL } from "@/lib/episodes";
 import EpisodeCard from "@/components/EpisodeCard";
 import SubscribeButtons from "@/components/SubscribeButtons";
@@ -16,34 +17,89 @@ export default async function Home() {
 
   return (
     <>
-      {/* ── Hero ── */}
-      <section className="relative overflow-hidden border-b border-slate-800">
-        {/* Background glow */}
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-cyan-950/20 via-slate-950 to-slate-950 pointer-events-none"
-        />
-        <div
-          aria-hidden
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"
-        />
+      {/* ── Threat Radar Hero ── */}
+      <section className="border-b border-slate-800">
+        <div className="max-w-5xl mx-auto px-6 pt-10 pb-6">
+          {/* Section header */}
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse inline-block" />
+                <span className="text-xs font-semibold uppercase tracking-widest text-cyan-500">
+                  Live · 30-Day Coverage
+                </span>
+              </div>
+              <h2 className="text-2xl font-bold text-white leading-tight">
+                Global Threat Landscape
+              </h2>
+              <p className="text-slate-500 text-sm mt-1">
+                Click any country to explore active threats, APT groups, and recent Cleartext stories
+              </p>
+            </div>
+            <Link
+              href="/radar"
+              className="flex-shrink-0 hidden sm:flex items-center gap-1.5 text-sm text-cyan-400 hover:text-cyan-300 transition-colors font-medium mt-1"
+            >
+              Full screen
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </Link>
+          </div>
 
-        <div className="relative max-w-3xl mx-auto px-6 py-20 text-center">
+          {/* Radar iframe */}
+          <div
+            className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950"
+            style={{ height: "58vh", minHeight: "400px" }}
+          >
+            <iframe
+              src="/threat-radar-mockup.html"
+              className="w-full h-full border-0"
+              title="30-Day Threat Radar"
+            />
+          </div>
+
+          {/* Below-map CTA row */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-3">
+            <p className="text-slate-500 text-xs leading-relaxed max-w-md">
+              Each dot represents stories Cleartext has covered in the last 30 days.
+              Subscribe to hear them daily.
+            </p>
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <Link
+                href="/radar"
+                className="text-xs text-slate-400 hover:text-white transition-colors sm:hidden"
+              >
+                Full screen →
+              </Link>
+              <SubscribeButtons compact />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Podcast Hero ── */}
+      <section className="relative overflow-hidden border-b border-slate-800">
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-b from-cyan-950/10 via-slate-950 to-slate-950 pointer-events-none"
+        />
+        <div className="relative max-w-3xl mx-auto px-6 py-14 text-center">
           <Image
             src={LOGO_URL}
             alt="Cleartext"
-            width={96}
-            height={96}
-            className="rounded-2xl mx-auto mb-6 shadow-2xl shadow-cyan-500/20"
+            width={80}
+            height={80}
+            className="rounded-2xl mx-auto mb-5 shadow-2xl shadow-cyan-500/20"
             priority
           />
-          <h1 className="text-5xl font-bold text-white tracking-tight mb-4">
+          <h1 className="text-4xl font-bold text-white tracking-tight mb-3">
             Cleartext
           </h1>
-          <p className="text-xl text-slate-400 mb-2 leading-relaxed">
+          <p className="text-lg text-slate-400 mb-2 leading-relaxed">
             Daily cybersecurity briefing for CISOs and security leaders.
           </p>
-          <p className="text-slate-600 text-sm mb-10">
+          <p className="text-slate-600 text-sm mb-8">
             New episodes Monday–Friday · Week in Review every Saturday
           </p>
           <SubscribeButtons />

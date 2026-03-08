@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cleartext — 30-Day Threat Radar</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#020617;color:#e2e8f0;font-family:'Inter',system-ui,sans-serif;height:100vh;overflow:hidden}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid #1e293b;background:rgba(2,6,23,.95);backdrop-filter:blur(8px);position:relative;z-index:100;height:56px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.3px}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:#22d3ee;box-shadow:0 0 8px #22d3ee;animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
+.live-badge{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#22d3ee;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.2);padding:4px 12px;border-radius:20px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#22d3ee;animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.main{display:grid;grid-template-columns:1fr 360px;height:100vh}
+
+#map-wrap{position:relative;background:radial-gradient(ellipse at 50% 40%,#071020 0%,#020617 65%);overflow:hidden}
+#map{width:100%;height:100%;cursor:grab}
+#map:active{cursor:grabbing}
+
+.country{fill:#162032;stroke:#253347;stroke-width:.4;transition:fill .25s}
+.country:hover{fill:#1e2f45;cursor:pointer}
+.country.selected{fill:#1a2e48;stroke:#22d3ee;stroke-width:1.5}
+.country.dimmed{fill:#0d1825;stroke:#1a2535;opacity:.4}
+.grid-line{stroke:#0d1929;stroke-width:.5}
+
+#map-overlay-top{position:absolute;top:20px;left:24px;z-index:10;pointer-events:none}
+#map-overlay-top h2{font-size:18px;font-weight:700;color:#f1f5f9}
+#map-overlay-top p{font-size:11px;color:#475569;margin-top:3px}
+#zoom-out-btn{position:absolute;bottom:24px;left:24px;z-index:20;display:none;align-items:center;gap:6px;background:rgba(15,23,42,.9);border:1px solid #334155;color:#94a3b8;font-size:12px;font-weight:500;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .2s;backdrop-filter:blur(4px)}
+#zoom-out-btn:hover{background:rgba(30,41,59,.9);color:#e2e8f0;border-color:#475569}
+
+.legend{position:absolute;bottom:24px;right:8px;display:flex;flex-wrap:wrap;gap:12px;padding:8px 14px;background:rgba(2,6,23,.75);border-radius:8px;font-size:10px;color:#64748b;pointer-events:none;border:1px solid #0f172a}
+.legend-item{display:flex;align-items:center;gap:5px}
+.legend-dot{width:7px;height:7px;border-radius:50%}
+
+.pulse-ring{fill:none;stroke-width:1.5;animation:expand-ring 3s ease-out infinite}
+@keyframes expand-ring{0%{r:5;opacity:.9;stroke-width:2}100%{r:30;opacity:0;stroke-width:.5}}
+.pulse-core{animation:core-throb 2s ease-in-out infinite}
+@keyframes core-throb{0%,100%{opacity:1}50%{opacity:.75}}
+.pulse-group{cursor:pointer}
+
+#tooltip{position:absolute;background:rgba(10,16,30,.97);border:1px solid #334155;border-radius:10px;padding:12px 14px;max-width:240px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:50;backdrop-filter:blur(8px);box-shadow:0 8px 32px rgba(0,0,0,.5)}
+#tooltip.show{opacity:1}
+#tooltip h4{font-size:13px;font-weight:600;color:#f1f5f9;margin-bottom:6px}
+.tt-story{font-size:11px;color:#94a3b8;margin-bottom:3px;line-height:1.4}
+.tt-story:before{content:"▸ ";color:#22d3ee}
+.tt-foot{font-size:10px;color:#475569;margin-top:6px;padding-top:6px;border-top:1px solid #1e293b}
+
+/* Sidebar */
+.sidebar{border-left:1px solid #1e293b;background:#050d1a;display:flex;flex-direction:column;overflow:hidden}
+#view-global{display:flex;flex-direction:column;height:100%}
+#view-country{display:none;flex-direction:column;height:100%;overflow:hidden;animation:slide-in .3s ease}
+@keyframes slide-in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+
+.sidebar-hdr{padding:14px 20px 10px;border-bottom:1px solid #1e293b;flex-shrink:0}
+.sidebar-hdr h3{font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.1em}
+.sidebar-hdr .sub{font-size:11px;color:#334155;margin-top:2px}
+.cat-bars{padding:12px 20px 8px;border-bottom:1px solid #0f172a;flex-shrink:0}
+.cat-row{margin-bottom:8px}
+.cat-lr{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+.bar-track{background:#0f172a;border-radius:2px;height:3px}
+.bar-fill{height:100%;border-radius:2px}
+
+/* Country detail */
+.back-btn{display:flex;align-items:center;gap:5px;font-size:11px;color:#475569;cursor:pointer;background:none;border:none;transition:color .2s;padding:14px 20px 0;flex-shrink:0;width:100%}
+.back-btn:hover{color:#94a3b8}
+
+/* Country hero */
+.country-hero{padding:12px 20px 16px;border-bottom:1px solid #1e293b;flex-shrink:0}
+.hero-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.hero-flag{font-size:32px;line-height:1;flex-shrink:0}
+.hero-text{}
+.hero-name{font-size:20px;font-weight:700;color:#f1f5f9;line-height:1.1}
+.hero-sub{font-size:11px;color:#475569;margin-top:3px}
+
+/* Stat grid */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-card{background:#0a1628;border:1px solid #1e293b;border-radius:8px;padding:9px 12px}
+.stat-label{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#334155;margin-bottom:3px}
+.stat-value{font-size:14px;font-weight:700;color:#e2e8f0}
+.stat-sub{font-size:10px;color:#475569;margin-top:1px}
+
+/* ITU meter */
+.itu-row{margin-top:8px}
+.itu-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.itu-label{font-size:10px;color:#64748b}
+.itu-score{font-size:12px;font-weight:700}
+.itu-track{background:#0a1628;border-radius:4px;height:6px;overflow:hidden;border:1px solid #1e293b}
+.itu-fill{height:100%;border-radius:4px;transition:width 1s ease .1s}
+.itu-tier{font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:3px;margin-left:6px}
+
+/* APT section */
+.section{padding:10px 20px;border-bottom:1px solid #0a1628;flex-shrink:0}
+.section-title{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#334155;margin-bottom:7px}
+.apt-chips{display:flex;flex-wrap:wrap;gap:4px}
+.apt-chip{font-size:10px;color:#fbbf24;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.15);padding:3px 8px;border-radius:4px;font-weight:500}
+.apt-none{font-size:11px;color:#334155;font-style:italic}
+
+/* Coverage section */
+.coverage-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.threat-pill{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px}
+.no-coverage{padding:12px 20px;font-size:12px;color:#334155;font-style:italic;flex-shrink:0}
+
+/* Story scroll */
+.story-scroll{flex:1;overflow-y:auto}
+.story-scroll::-webkit-scrollbar{width:3px}
+.story-scroll::-webkit-scrollbar-thumb{background:#1e293b;border-radius:2px}
+.feed-item{padding:12px 20px;border-bottom:1px solid #0a1628;position:relative;transition:background .15s;cursor:pointer}
+.feed-item:hover{background:#0a1628}
+.feed-bar{position:absolute;left:0;top:0;bottom:0;width:2px}
+.cat-pill{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:2px 7px;border-radius:3px;margin-bottom:5px}
+.item-title{font-size:12px;color:#cbd5e1;line-height:1.45;margin-bottom:4px}
+.item-meta{font-size:10px;color:#334155;display:flex;gap:6px;align-items:center}
+.score-dot{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:3px;vertical-align:middle}
+
+.c-apt{color:#a78bfa}.bg-apt{background:rgba(167,139,250,.15);color:#a78bfa}
+.c-breach{color:#ef4444}.bg-breach{background:rgba(239,68,68,.15);color:#ef4444}
+.c-vuln{color:#f59e0b}.bg-vuln{background:rgba(245,158,11,.15);color:#f59e0b}
+.c-gov{color:#34d399}.bg-gov{background:rgba(52,211,153,.15);color:#34d399}
+.c-macro{color:#60a5fa}.bg-macro{background:rgba(96,165,250,.15);color:#60a5fa}
+
+.bar-apt{background:#a78bfa}.bar-breach{background:#ef4444}.bar-vuln{background:#f59e0b}.bar-gov{background:#34d399}.bar-macro{background:#60a5fa}
+.pulse-apt{stroke:#a78bfa}.core-apt{fill:#a78bfa}
+.pulse-breach{stroke:#ef4444}.core-breach{fill:#ef4444}
+.pulse-vuln{stroke:#f59e0b}.core-vuln{fill:#f59e0b}
+.pulse-gov{stroke:#34d399}.core-gov{fill:#34d399}
+.pulse-macro{stroke:#60a5fa}.core-macro{fill:#60a5fa}
+
+.divider{height:1px;background:#0f172a;margin:0}
+</style>
+</head>
+<body>
+<div class="main">
+  <div id="map-wrap">
+    <div id="map-overlay-top">
+      <h2 id="map-title">Global Threat Coverage</h2>
+      <p id="map-subtitle">Click any country to explore · <span id="story-count">0</span> stories tracked</p>
+    </div>
+    <svg id="map"></svg>
+    <div id="tooltip"></div>
+    <button id="zoom-out-btn">← Global View</button>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#ef4444;box-shadow:0 0 5px #ef4444"></div>Breach</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a78bfa;box-shadow:0 0 5px #a78bfa"></div>APT</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;box-shadow:0 0 5px #f59e0b"></div>Vuln</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#34d399;box-shadow:0 0 5px #34d399"></div>Governance</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#60a5fa;box-shadow:0 0 5px #60a5fa"></div>Policy</div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <!-- GLOBAL VIEW -->
+    <div id="view-global">
+      <div class="sidebar-hdr"><h3>Activity by Category</h3><div class="sub">Feb 6 – Mar 7, 2026 · 25 stories</div></div>
+      <div class="cat-bars">
+        <div class="cat-row"><div class="cat-lr"><span class="c-apt" style="font-size:11px">APT / Espionage</span><span style="color:#334155;font-size:11px">9</span></div><div class="bar-track"><div class="bar-fill bar-apt" style="width:100%"></div></div></div>
+        <div class="cat-row"><div class="cat-lr"><span class="c-breach" style="font-size:11px">Data Breach</span><span style="color:#334155;font-size:11px">7</span></div><div class="bar-track"><div class="bar-fill bar-breach" style="width:78%"></div></div></div>
+        <div class="cat-row"><div class="cat-lr"><span class="c-macro" style="font-size:11px">Macro / Policy</span><span style="color:#334155;font-size:11px">5</span></div><div class="bar-track"><div class="bar-fill bar-macro" style="width:55%"></div></div></div>
+        <div class="cat-row"><div class="cat-lr"><span class="c-vuln" style="font-size:11px">Vulnerability</span><span style="color:#334155;font-size:11px">4</span></div><div class="bar-track"><div class="bar-fill bar-vuln" style="width:44%"></div></div></div>
+      </div>
+      <div class="sidebar-hdr" style="padding-top:12px"><h3>Recent Stories</h3></div>
+      <div class="story-scroll" id="global-feed"></div>
+    </div>
+
+    <!-- COUNTRY DETAIL VIEW -->
+    <div id="view-country">
+      <button class="back-btn" id="back-btn">← Back to global view</button>
+
+      <div class="country-hero" id="c-hero">
+        <div class="hero-top">
+          <div class="hero-flag" id="c-flag"></div>
+          <div class="hero-text">
+            <div class="hero-name" id="c-name"></div>
+            <div class="hero-sub" id="c-sub"></div>
+          </div>
+        </div>
+        <div class="stat-grid" id="c-stats"></div>
+        <div class="itu-row" id="c-itu"></div>
+      </div>
+
+      <div class="section" id="c-apt-section">
+        <div class="section-title">Known Threat Actors</div>
+        <div class="apt-chips" id="c-apts"></div>
+      </div>
+
+      <div class="section" id="c-coverage-section">
+        <div class="section-title">Cleartext Coverage · Last 30 Days</div>
+        <div id="c-coverage-body"></div>
+      </div>
+
+      <div class="sidebar-hdr" id="c-stories-hdr" style="padding-top:10px;display:none">
+        <h3 id="c-stories-label">Stories</h3>
+      </div>
+      <div class="story-scroll" id="country-feed"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Country intelligence database ─────────────────────────────────────────────
+const COUNTRY_DB = {
+  "156": { name:"China", flag:"🇨🇳", region:"East Asia", capital:"Beijing",
+    pop:"1.41B", gdp:"$18.5T", gdp_rank:"2nd", internet:"79%",
+    itu_score: 87.6, itu_tier:"Tier 1",
+    sectors:["Telecom","Defense","Finance","Manufacturing"],
+    apts:["Volt Typhoon","Salt Typhoon","APT41","APT10","Hafnium","Silk Typhoon"] },
+  "643": { name:"Russia", flag:"🇷🇺", region:"Eastern Europe", capital:"Moscow",
+    pop:"144M", gdp:"$2.2T", gdp_rank:"11th", internet:"88%",
+    itu_score: 82.0, itu_tier:"Tier 1",
+    sectors:["Energy","Government","Defense","Finance"],
+    apts:["Sandworm","Fancy Bear (APT28)","Cozy Bear (APT29)","Midnight Blizzard","Turla"] },
+  "840": { name:"United States", flag:"🇺🇸", region:"North America", capital:"Washington D.C.",
+    pop:"335M", gdp:"$27.4T", gdp_rank:"1st", internet:"92%",
+    itu_score: 100.0, itu_tier:"Tier 1",
+    sectors:["Finance","Healthcare","Defense","Critical Infrastructure"],
+    apts:[] },
+  "364": { name:"Iran", flag:"🇮🇷", region:"Middle East", capital:"Tehran",
+    pop:"89M", gdp:"$413B", gdp_rank:"40th", internet:"79%",
+    itu_score: 61.9, itu_tier:"Tier 2",
+    sectors:["Energy","Government","Financial"],
+    apts:["MuddyWater","APT33 (Charming Kitten)","APT34 (OilRig)","Tortoiseshell"] },
+  "408": { name:"North Korea", flag:"🇰🇵", region:"East Asia", capital:"Pyongyang",
+    pop:"26M", gdp:"$40B", gdp_rank:"est.", internet:"<1%",
+    itu_score: 21.5, itu_tier:"Tier 4",
+    sectors:["Cryptocurrency","Defense Contractors","Banks"],
+    apts:["Lazarus Group","APT38","Kimsuky","Andariel"] },
+  "826": { name:"United Kingdom", flag:"🇬🇧", region:"Western Europe", capital:"London",
+    pop:"68M", gdp:"$3.1T", gdp_rank:"6th", internet:"97%",
+    itu_score: 99.5, itu_tier:"Tier 1",
+    sectors:["Finance","Government","Critical Infrastructure"],
+    apts:[] },
+  "036": { name:"Australia", flag:"🇦🇺", region:"Oceania", capital:"Canberra",
+    pop:"26M", gdp:"$1.7T", gdp_rank:"13th", internet:"96%",
+    itu_score: 94.3, itu_tier:"Tier 1",
+    sectors:["Healthcare","Finance","Telecom"],
+    apts:[] },
+  "276": { name:"Germany", flag:"🇩🇪", region:"Western Europe", capital:"Berlin",
+    pop:"84M", gdp:"$4.5T", gdp_rank:"3rd", internet:"94%",
+    itu_score: 97.5, itu_tier:"Tier 1",
+    sectors:["Manufacturing","Defense","Automotive","Energy"],
+    apts:[] },
+  "356": { name:"India", flag:"🇮🇳", region:"South Asia", capital:"New Delhi",
+    pop:"1.43B", gdp:"$3.9T", gdp_rank:"5th", internet:"52%",
+    itu_score: 65.0, itu_tier:"Tier 2",
+    sectors:["IT Services","Telecom","Finance","Government"],
+    apts:["SideWinder","Patchwork"] },
+  "056": { name:"Belgium", flag:"🇧🇪", region:"Western Europe", capital:"Brussels",
+    pop:"11.6M", gdp:"$627B", gdp_rank:"25th", internet:"93%",
+    itu_score: 95.1, itu_tier:"Tier 1",
+    sectors:["EU Institutions","Finance","Telecom"],
+    apts:[] },
+  "250": { name:"France", flag:"🇫🇷", region:"Western Europe", capital:"Paris",
+    pop:"68M", gdp:"$3.1T", gdp_rank:"7th", internet:"93%",
+    itu_score: 99.5, itu_tier:"Tier 1",
+    sectors:["Aerospace","Defense","Finance","Energy"],
+    apts:[] },
+  "392": { name:"Japan", flag:"🇯🇵", region:"East Asia", capital:"Tokyo",
+    pop:"125M", gdp:"$4.2T", gdp_rank:"4th", internet:"93%",
+    itu_score: 97.8, itu_tier:"Tier 1",
+    sectors:["Manufacturing","Finance","Government","Semiconductor"],
+    apts:[] },
+  "410": { name:"South Korea", flag:"🇰🇷", region:"East Asia", capital:"Seoul",
+    pop:"52M", gdp:"$1.7T", gdp_rank:"14th", internet:"97%",
+    itu_score: 98.7, itu_tier:"Tier 1",
+    sectors:["Semiconductor","Finance","Defense","Crypto"],
+    apts:[] },
+  "376": { name:"Israel", flag:"🇮🇱", region:"Middle East", capital:"Jerusalem",
+    pop:"9.8M", gdp:"$525B", gdp_rank:"29th", internet:"90%",
+    itu_score: 89.7, itu_tier:"Tier 1",
+    sectors:["Cybersecurity","Defense","Finance","Telecom"],
+    apts:[] },
+  "124": { name:"Canada", flag:"🇨🇦", region:"North America", capital:"Ottawa",
+    pop:"40M", gdp:"$2.1T", gdp_rank:"9th", internet:"95%",
+    itu_score: 99.1, itu_tier:"Tier 1",
+    sectors:["Energy","Finance","Government","Healthcare"],
+    apts:[] },
+  "528": { name:"Netherlands", flag:"🇳🇱", region:"Western Europe", capital:"Amsterdam",
+    pop:"17.9M", gdp:"$1.1T", gdp_rank:"18th", internet:"96%",
+    itu_score: 97.1, itu_tier:"Tier 1",
+    sectors:["Finance","Logistics","Semiconductor","Telecom"],
+    apts:[] },
+  "804": { name:"Ukraine", flag:"🇺🇦", region:"Eastern Europe", capital:"Kyiv",
+    pop:"43M", gdp:"$180B", gdp_rank:"55th", internet:"79%",
+    itu_score: 74.2, itu_tier:"Tier 2",
+    sectors:["Government","Energy","Military","Finance"],
+    apts:["UAC-0056","UAC-0010 (Gamaredon)"] },
+  "158": { name:"Taiwan", flag:"🇹🇼", region:"East Asia", capital:"Taipei",
+    pop:"23M", gdp:"$790B", gdp_rank:"22nd", internet:"90%",
+    itu_score: 88.1, itu_tier:"Tier 1",
+    sectors:["Semiconductor","Manufacturing","Finance","Telecom"],
+    apts:[] },
+  "702": { name:"Singapore", flag:"🇸🇬", region:"Southeast Asia", capital:"Singapore",
+    pop:"5.9M", gdp:"$517B", gdp_rank:"30th", internet:"97%",
+    itu_score: 98.5, itu_tier:"Tier 1",
+    sectors:["Finance","Telecom","Maritime","Government"],
+    apts:[] },
+  "076": { name:"Brazil", flag:"🇧🇷", region:"South America", capital:"Brasília",
+    pop:"215M", gdp:"$2.1T", gdp_rank:"9th", internet:"81%",
+    itu_score: 76.2, itu_tier:"Tier 2",
+    sectors:["Finance","Government","Energy","Telecom"],
+    apts:[] },
+  "380": { name:"Italy", flag:"🇮🇹", region:"Western Europe", capital:"Rome",
+    pop:"60M", gdp:"$2.2T", gdp_rank:"8th", internet:"90%",
+    itu_score: 95.3, itu_tier:"Tier 1",
+    sectors:["Manufacturing","Finance","Government","Energy"],
+    apts:[] },
+  "724": { name:"Spain", flag:"🇪🇸", region:"Western Europe", capital:"Madrid",
+    pop:"47M", gdp:"$1.6T", gdp_rank:"15th", internet:"95%",
+    itu_score: 95.8, itu_tier:"Tier 1",
+    sectors:["Finance","Energy","Telecom","Government"],
+    apts:[] },
+  "752": { name:"Sweden", flag:"🇸🇪", region:"Northern Europe", capital:"Stockholm",
+    pop:"10.5M", gdp:"$585B", gdp_rank:"23rd", internet:"97%",
+    itu_score: 96.6, itu_tier:"Tier 1",
+    sectors:["Telecom","Defense","Finance","Manufacturing"],
+    apts:[] },
+  "792": { name:"Türkiye", flag:"🇹🇷", region:"Middle East / Europe", capital:"Ankara",
+    pop:"85M", gdp:"$1.1T", gdp_rank:"17th", internet:"83%",
+    itu_score: 84.8, itu_tier:"Tier 1",
+    sectors:["Government","Defense","Finance","Telecom"],
+    apts:[] },
+  "682": { name:"Saudi Arabia", flag:"🇸🇦", region:"Middle East", capital:"Riyadh",
+    pop:"36M", gdp:"$1.1T", gdp_rank:"18th", internet:"98%",
+    itu_score: 92.5, itu_tier:"Tier 1",
+    sectors:["Energy","Finance","Government","Telecom"],
+    apts:[] },
+  "784": { name:"UAE", flag:"🇦🇪", region:"Middle East", capital:"Abu Dhabi",
+    pop:"9.9M", gdp:"$507B", gdp_rank:"31st", internet:"100%",
+    itu_score: 90.9, itu_tier:"Tier 1",
+    sectors:["Finance","Government","Telecom","Logistics"],
+    apts:[] },
+};
+
+// ── World country data — name, flag, region + 4 basic stats for every country ─
+// For countries in COUNTRY_DB the detailed data overrides these entries.
+const COUNTRY_DATA = {
+  // Africa
+  "012":{name:"Algeria",flag:"🇩🇿",region:"North Africa",pop:"46M",gdp:"$193B",internet:"64%",sectors:["Oil & Gas","Phosphates","Agriculture"]},
+  "024":{name:"Angola",flag:"🇦🇴",region:"Southern Africa",pop:"34M",gdp:"$84B",internet:"33%",sectors:["Oil","Mining","Agriculture"]},
+  "072":{name:"Botswana",flag:"🇧🇼",region:"Southern Africa",pop:"2.6M",gdp:"$20B",internet:"67%",sectors:["Diamonds","Tourism","Finance"]},
+  "108":{name:"Burundi",flag:"🇧🇮",region:"Central Africa",pop:"12M",gdp:"$3B",internet:"5%",sectors:["Agriculture","Mining","Aid"]},
+  "120":{name:"Cameroon",flag:"🇨🇲",region:"Central Africa",pop:"28M",gdp:"$45B",internet:"31%",sectors:["Oil","Agriculture","Telecom"]},
+  "140":{name:"Central African Rep.",flag:"🇨🇫",region:"Central Africa",pop:"5.3M",gdp:"$3B",internet:"6%",sectors:["Mining","Agriculture","Timber"]},
+  "148":{name:"Chad",flag:"🇹🇩",region:"Central Africa",pop:"17M",gdp:"$11B",internet:"7%",sectors:["Oil","Agriculture","Livestock"]},
+  "178":{name:"Republic of Congo",flag:"🇨🇬",region:"Central Africa",pop:"5.8M",gdp:"$10B",internet:"23%",sectors:["Oil","Mining","Timber"]},
+  "180":{name:"DR Congo",flag:"🇨🇩",region:"Central Africa",pop:"100M",gdp:"$65B",internet:"19%",sectors:["Mining","Agriculture","Hydropower"]},
+  "262":{name:"Djibouti",flag:"🇩🇯",region:"East Africa",pop:"1.1M",gdp:"$3.5B",internet:"63%",sectors:["Port/Logistics","Finance","Government"]},
+  "818":{name:"Egypt",flag:"🇪🇬",region:"North Africa",pop:"105M",gdp:"$387B",internet:"72%",sectors:["Tourism","Energy","Textiles"]},
+  "231":{name:"Ethiopia",flag:"🇪🇹",region:"East Africa",pop:"124M",gdp:"$127B",internet:"19%",sectors:["Agriculture","Textiles","Telecom"]},
+  "266":{name:"Gabon",flag:"🇬🇦",region:"Central Africa",pop:"2.3M",gdp:"$19B",internet:"62%",sectors:["Oil","Mining","Timber"]},
+  "288":{name:"Ghana",flag:"🇬🇭",region:"West Africa",pop:"33M",gdp:"$77B",internet:"54%",sectors:["Gold","Oil","Agriculture"]},
+  "324":{name:"Guinea",flag:"🇬🇳",region:"West Africa",pop:"13M",gdp:"$17B",internet:"23%",sectors:["Bauxite","Mining","Agriculture"]},
+  "404":{name:"Kenya",flag:"🇰🇪",region:"East Africa",pop:"55M",gdp:"$110B",internet:"42%",sectors:["Agriculture","Finance","Telecom"]},
+  "430":{name:"Liberia",flag:"🇱🇷",region:"West Africa",pop:"5.3M",gdp:"$4B",internet:"27%",sectors:["Rubber","Mining","Agriculture"]},
+  "434":{name:"Libya",flag:"🇱🇾",region:"North Africa",pop:"7M",gdp:"$33B",internet:"83%",sectors:["Oil","Gas","Finance"]},
+  "450":{name:"Madagascar",flag:"🇲🇬",region:"East Africa",pop:"28M",gdp:"$14B",internet:"19%",sectors:["Agriculture","Mining","Tourism"]},
+  "454":{name:"Malawi",flag:"🇲🇼",region:"Southern Africa",pop:"20M",gdp:"$12B",internet:"18%",sectors:["Tobacco","Tea","Agriculture"]},
+  "466":{name:"Mali",flag:"🇲🇱",region:"West Africa",pop:"22M",gdp:"$19B",internet:"34%",sectors:["Gold","Agriculture","Livestock"]},
+  "478":{name:"Mauritania",flag:"🇲🇷",region:"West Africa",pop:"4.7M",gdp:"$10B",internet:"55%",sectors:["Iron Ore","Fisheries","Agriculture"]},
+  "504":{name:"Morocco",flag:"🇲🇦",region:"North Africa",pop:"37M",gdp:"$141B",internet:"84%",sectors:["Tourism","Phosphates","Manufacturing"]},
+  "508":{name:"Mozambique",flag:"🇲🇿",region:"Southern Africa",pop:"33M",gdp:"$18B",internet:"18%",sectors:["Gas","Mining","Agriculture"]},
+  "516":{name:"Namibia",flag:"🇳🇦",region:"Southern Africa",pop:"2.7M",gdp:"$12B",internet:"57%",sectors:["Mining","Agriculture","Tourism"]},
+  "562":{name:"Niger",flag:"🇳🇪",region:"West Africa",pop:"25M",gdp:"$14B",internet:"24%",sectors:["Uranium","Agriculture","Livestock"]},
+  "566":{name:"Nigeria",flag:"🇳🇬",region:"West Africa",pop:"220M",gdp:"$477B",internet:"55%",sectors:["Oil","Finance","Telecom"]},
+  "646":{name:"Rwanda",flag:"🇷🇼",region:"East Africa",pop:"14M",gdp:"$13B",internet:"38%",sectors:["Agriculture","Finance","Tourism"]},
+  "686":{name:"Senegal",flag:"🇸🇳",region:"West Africa",pop:"18M",gdp:"$27B",internet:"64%",sectors:["Fishing","Agriculture","Telecom"]},
+  "694":{name:"Sierra Leone",flag:"🇸🇱",region:"West Africa",pop:"8.2M",gdp:"$4.4B",internet:"21%",sectors:["Mining","Agriculture","Fishing"]},
+  "706":{name:"Somalia",flag:"🇸🇴",region:"East Africa",pop:"17M",gdp:"$8B",internet:"21%",sectors:["Livestock","Telecom","Remittances"]},
+  "710":{name:"South Africa",flag:"🇿🇦",region:"Southern Africa",pop:"60M",gdp:"$399B",internet:"72%",sectors:["Mining","Finance","Manufacturing"]},
+  "728":{name:"South Sudan",flag:"🇸🇸",region:"East Africa",pop:"11M",gdp:"$4B",internet:"8%",sectors:["Oil","Agriculture","Livestock"]},
+  "729":{name:"Sudan",flag:"🇸🇩",region:"North Africa",pop:"46M",gdp:"$47B",internet:"28%",sectors:["Oil","Gold","Agriculture"]},
+  "834":{name:"Tanzania",flag:"🇹🇿",region:"East Africa",pop:"63M",gdp:"$84B",internet:"45%",sectors:["Agriculture","Mining","Tourism"]},
+  "768":{name:"Togo",flag:"🇹🇬",region:"West Africa",pop:"8.9M",gdp:"$9B",internet:"45%",sectors:["Phosphates","Agriculture","Finance"]},
+  "788":{name:"Tunisia",flag:"🇹🇳",region:"North Africa",pop:"12M",gdp:"$47B",internet:"74%",sectors:["Tourism","Energy","Manufacturing"]},
+  "800":{name:"Uganda",flag:"🇺🇬",region:"East Africa",pop:"48M",gdp:"$45B",internet:"27%",sectors:["Agriculture","Mining","Telecom"]},
+  "894":{name:"Zambia",flag:"🇿🇲",region:"Southern Africa",pop:"19M",gdp:"$28B",internet:"46%",sectors:["Copper","Agriculture","Energy"]},
+  "716":{name:"Zimbabwe",flag:"🇿🇼",region:"Southern Africa",pop:"16M",gdp:"$28B",internet:"35%",sectors:["Mining","Agriculture","Tourism"]},
+  "384":{name:"Côte d'Ivoire",flag:"🇨🇮",region:"West Africa",pop:"27M",gdp:"$70B",internet:"44%",sectors:["Cocoa","Agriculture","Finance"]},
+  // Americas
+  "032":{name:"Argentina",flag:"🇦🇷",region:"South America",pop:"46M",gdp:"$641B",internet:"80%",sectors:["Agriculture","Manufacturing","Finance"]},
+  "068":{name:"Bolivia",flag:"🇧🇴",region:"South America",pop:"12M",gdp:"$44B",internet:"66%",sectors:["Gas","Mining","Agriculture"]},
+  "152":{name:"Chile",flag:"🇨🇱",region:"South America",pop:"19M",gdp:"$317B",internet:"88%",sectors:["Copper","Lithium","Agriculture"]},
+  "170":{name:"Colombia",flag:"🇨🇴",region:"South America",pop:"52M",gdp:"$344B",internet:"65%",sectors:["Oil","Coffee","Manufacturing"]},
+  "188":{name:"Costa Rica",flag:"🇨🇷",region:"Central America",pop:"5.2M",gdp:"$68B",internet:"80%",sectors:["Technology","Tourism","Agriculture"]},
+  "218":{name:"Ecuador",flag:"🇪🇨",region:"South America",pop:"18M",gdp:"$115B",internet:"63%",sectors:["Oil","Shrimp","Agriculture"]},
+  "320":{name:"Guatemala",flag:"🇬🇹",region:"Central America",pop:"17M",gdp:"$82B",internet:"55%",sectors:["Agriculture","Manufacturing","Tourism"]},
+  "332":{name:"Haiti",flag:"🇭🇹",region:"Caribbean",pop:"11M",gdp:"$20B",internet:"38%",sectors:["Agriculture","Remittances","Manufacturing"]},
+  "340":{name:"Honduras",flag:"🇭🇳",region:"Central America",pop:"10M",gdp:"$32B",internet:"48%",sectors:["Agriculture","Textiles","Remittances"]},
+  "484":{name:"Mexico",flag:"🇲🇽",region:"North America",pop:"130M",gdp:"$1.3T",internet:"76%",sectors:["Manufacturing","Oil","Agriculture"]},
+  "558":{name:"Nicaragua",flag:"🇳🇮",region:"Central America",pop:"6.8M",gdp:"$15B",internet:"46%",sectors:["Agriculture","Manufacturing","Mining"]},
+  "591":{name:"Panama",flag:"🇵🇦",region:"Central America",pop:"4.4M",gdp:"$65B",internet:"64%",sectors:["Canal","Finance","Logistics"]},
+  "600":{name:"Paraguay",flag:"🇵🇾",region:"South America",pop:"7.4M",gdp:"$43B",internet:"74%",sectors:["Agriculture","Energy","Manufacturing"]},
+  "604":{name:"Peru",flag:"🇵🇪",region:"South America",pop:"33M",gdp:"$226B",internet:"59%",sectors:["Mining","Agriculture","Manufacturing"]},
+  "858":{name:"Uruguay",flag:"🇺🇾",region:"South America",pop:"3.5M",gdp:"$78B",internet:"85%",sectors:["Agriculture","Finance","Technology"]},
+  "862":{name:"Venezuela",flag:"🇻🇪",region:"South America",pop:"32M",gdp:"$95B",internet:"72%",sectors:["Oil","Mining","Agriculture"]},
+  // Asia
+  "004":{name:"Afghanistan",flag:"🇦🇫",region:"Central Asia",pop:"40M",gdp:"$20B",internet:"18%",sectors:["Agriculture","Mining","Aid"]},
+  "050":{name:"Bangladesh",flag:"🇧🇩",region:"South Asia",pop:"167M",gdp:"$460B",internet:"44%",sectors:["Garments","Remittances","Agriculture"]},
+  "104":{name:"Myanmar",flag:"🇲🇲",region:"Southeast Asia",pop:"54M",gdp:"$65B",internet:"32%",sectors:["Gas","Agriculture","Manufacturing"]},
+  "116":{name:"Cambodia",flag:"🇰🇭",region:"Southeast Asia",pop:"17M",gdp:"$30B",internet:"49%",sectors:["Tourism","Garments","Agriculture"]},
+  "360":{name:"Indonesia",flag:"🇮🇩",region:"Southeast Asia",pop:"277M",gdp:"$1.3T",internet:"77%",sectors:["Palm Oil","Mining","Manufacturing"]},
+  "368":{name:"Iraq",flag:"🇮🇶",region:"Middle East",pop:"42M",gdp:"$264B",internet:"79%",sectors:["Oil","Agriculture","Manufacturing"]},
+  "400":{name:"Jordan",flag:"🇯🇴",region:"Middle East",pop:"10M",gdp:"$50B",internet:"83%",sectors:["Phosphates","Tourism","Finance"]},
+  "398":{name:"Kazakhstan",flag:"🇰🇿",region:"Central Asia",pop:"19M",gdp:"$225B",internet:"90%",sectors:["Oil","Gas","Metals"]},
+  "414":{name:"Kuwait",flag:"🇰🇼",region:"Middle East",pop:"4.3M",gdp:"$134B",internet:"100%",sectors:["Oil","Finance","Government"]},
+  "418":{name:"Laos",flag:"🇱🇦",region:"Southeast Asia",pop:"7.4M",gdp:"$19B",internet:"52%",sectors:["Hydropower","Mining","Agriculture"]},
+  "422":{name:"Lebanon",flag:"🇱🇧",region:"Middle East",pop:"5.5M",gdp:"$23B",internet:"81%",sectors:["Finance","Tourism","Remittances"]},
+  "458":{name:"Malaysia",flag:"🇲🇾",region:"Southeast Asia",pop:"33M",gdp:"$407B",internet:"89%",sectors:["Manufacturing","Palm Oil","Finance"]},
+  "496":{name:"Mongolia",flag:"🇲🇳",region:"East Asia",pop:"3.3M",gdp:"$17B",internet:"88%",sectors:["Mining","Agriculture","Tourism"]},
+  "524":{name:"Nepal",flag:"🇳🇵",region:"South Asia",pop:"30M",gdp:"$41B",internet:"42%",sectors:["Agriculture","Tourism","Remittances"]},
+  "586":{name:"Pakistan",flag:"🇵🇰",region:"South Asia",pop:"231M",gdp:"$376B",internet:"36%",sectors:["Textiles","Agriculture","Manufacturing"]},
+  "608":{name:"Philippines",flag:"🇵🇭",region:"Southeast Asia",pop:"114M",gdp:"$405B",internet:"68%",sectors:["BPO","Manufacturing","Agriculture"]},
+  "634":{name:"Qatar",flag:"🇶🇦",region:"Middle East",pop:"2.9M",gdp:"$222B",internet:"100%",sectors:["Oil","Gas","Finance"]},
+  "144":{name:"Sri Lanka",flag:"🇱🇰",region:"South Asia",pop:"22M",gdp:"$74B",internet:"58%",sectors:["Tourism","Garments","Tea"]},
+  "760":{name:"Syria",flag:"🇸🇾",region:"Middle East",pop:"21M",gdp:"$22B",internet:"35%",sectors:["Oil","Agriculture","Government"]},
+  "764":{name:"Thailand",flag:"🇹🇭",region:"Southeast Asia",pop:"71M",gdp:"$544B",internet:"83%",sectors:["Tourism","Manufacturing","Agriculture"]},
+  "795":{name:"Turkmenistan",flag:"🇹🇲",region:"Central Asia",pop:"6.1M",gdp:"$50B",internet:"34%",sectors:["Gas","Oil","Agriculture"]},
+  "860":{name:"Uzbekistan",flag:"🇺🇿",region:"Central Asia",pop:"35M",gdp:"$80B",internet:"60%",sectors:["Cotton","Gold","Energy"]},
+  "704":{name:"Vietnam",flag:"🇻🇳",region:"Southeast Asia",pop:"98M",gdp:"$409B",internet:"73%",sectors:["Manufacturing","Agriculture","Tourism"]},
+  "887":{name:"Yemen",flag:"🇾🇪",region:"Middle East",pop:"34M",gdp:"$27B",internet:"22%",sectors:["Oil","Agriculture","Fishing"]},
+  // Europe
+  "008":{name:"Albania",flag:"🇦🇱",region:"Southeast Europe",pop:"2.8M",gdp:"$21B",internet:"76%",sectors:["Agriculture","Energy","Tourism"]},
+  "040":{name:"Austria",flag:"🇦🇹",region:"Central Europe",pop:"9.1M",gdp:"$527B",internet:"93%",sectors:["Manufacturing","Tourism","Finance"]},
+  "112":{name:"Belarus",flag:"🇧🇾",region:"Eastern Europe",pop:"9.4M",gdp:"$73B",internet:"87%",sectors:["Manufacturing","Energy","Agriculture"]},
+  "070":{name:"Bosnia & Herzegovina",flag:"🇧🇦",region:"Southeast Europe",pop:"3.2M",gdp:"$22B",internet:"74%",sectors:["Manufacturing","Agriculture","Energy"]},
+  "100":{name:"Bulgaria",flag:"🇧🇬",region:"Southeast Europe",pop:"6.5M",gdp:"$99B",internet:"79%",sectors:["Manufacturing","Tourism","IT"]},
+  "191":{name:"Croatia",flag:"🇭🇷",region:"Southeast Europe",pop:"3.9M",gdp:"$78B",internet:"81%",sectors:["Tourism","Manufacturing","Finance"]},
+  "196":{name:"Cyprus",flag:"🇨🇾",region:"Southern Europe",pop:"1.2M",gdp:"$30B",internet:"84%",sectors:["Tourism","Finance","Shipping"]},
+  "203":{name:"Czech Republic",flag:"🇨🇿",region:"Central Europe",pop:"10.9M",gdp:"$291B",internet:"88%",sectors:["Manufacturing","IT","Finance"]},
+  "208":{name:"Denmark",flag:"🇩🇰",region:"Northern Europe",pop:"5.9M",gdp:"$400B",internet:"99%",sectors:["Pharmaceuticals","Maritime","Finance"]},
+  "233":{name:"Estonia",flag:"🇪🇪",region:"Northern Europe",pop:"1.3M",gdp:"$41B",internet:"97%",sectors:["IT","Manufacturing","Finance"]},
+  "246":{name:"Finland",flag:"🇫🇮",region:"Northern Europe",pop:"5.5M",gdp:"$304B",internet:"95%",sectors:["Manufacturing","IT","Finance"]},
+  "300":{name:"Greece",flag:"🇬🇷",region:"Southern Europe",pop:"10.4M",gdp:"$239B",internet:"81%",sectors:["Tourism","Shipping","Agriculture"]},
+  "348":{name:"Hungary",flag:"🇭🇺",region:"Central Europe",pop:"9.6M",gdp:"$195B",internet:"86%",sectors:["Manufacturing","IT","Agriculture"]},
+  "352":{name:"Iceland",flag:"🇮🇸",region:"Northern Europe",pop:"0.4M",gdp:"$28B",internet:"99%",sectors:["Fishing","Aluminum","Tourism"]},
+  "372":{name:"Ireland",flag:"🇮🇪",region:"Northern Europe",pop:"5.1M",gdp:"$530B",internet:"94%",sectors:["Pharma","IT","Finance"]},
+  "428":{name:"Latvia",flag:"🇱🇻",region:"Northern Europe",pop:"1.8M",gdp:"$42B",internet:"91%",sectors:["Manufacturing","IT","Finance"]},
+  "440":{name:"Lithuania",flag:"🇱🇹",region:"Northern Europe",pop:"2.8M",gdp:"$67B",internet:"90%",sectors:["Manufacturing","IT","Finance"]},
+  "442":{name:"Luxembourg",flag:"🇱🇺",region:"Western Europe",pop:"0.7M",gdp:"$87B",internet:"99%",sectors:["Finance","Telecom","Logistics"]},
+  "499":{name:"Montenegro",flag:"🇲🇪",region:"Southeast Europe",pop:"0.6M",gdp:"$7B",internet:"81%",sectors:["Tourism","Energy","Agriculture"]},
+  "807":{name:"North Macedonia",flag:"🇲🇰",region:"Southeast Europe",pop:"2.1M",gdp:"$14B",internet:"82%",sectors:["Manufacturing","Mining","Agriculture"]},
+  "578":{name:"Norway",flag:"🇳🇴",region:"Northern Europe",pop:"5.4M",gdp:"$583B",internet:"99%",sectors:["Oil","Gas","Aquaculture"]},
+  "616":{name:"Poland",flag:"🇵🇱",region:"Central Europe",pop:"37.8M",gdp:"$748B",internet:"87%",sectors:["Manufacturing","IT","Finance"]},
+  "620":{name:"Portugal",flag:"🇵🇹",region:"Southern Europe",pop:"10.3M",gdp:"$259B",internet:"82%",sectors:["Tourism","Manufacturing","Finance"]},
+  "642":{name:"Romania",flag:"🇷🇴",region:"Eastern Europe",pop:"19.1M",gdp:"$285B",internet:"82%",sectors:["Manufacturing","IT","Agriculture"]},
+  "688":{name:"Serbia",flag:"🇷🇸",region:"Southeast Europe",pop:"6.8M",gdp:"$62B",internet:"79%",sectors:["Manufacturing","Agriculture","IT"]},
+  "703":{name:"Slovakia",flag:"🇸🇰",region:"Central Europe",pop:"5.5M",gdp:"$122B",internet:"89%",sectors:["Manufacturing","IT","Finance"]},
+  "705":{name:"Slovenia",flag:"🇸🇮",region:"Central Europe",pop:"2.1M",gdp:"$67B",internet:"88%",sectors:["Manufacturing","IT","Finance"]},
+  "756":{name:"Switzerland",flag:"🇨🇭",region:"Central Europe",pop:"8.7M",gdp:"$870B",internet:"96%",sectors:["Finance","Pharma","Manufacturing"]},
+  // Oceania
+  "554":{name:"New Zealand",flag:"🇳🇿",region:"Oceania",pop:"5.1M",gdp:"$247B",internet:"95%",sectors:["Agriculture","Tourism","Technology"]},
+  // Other / miscellaneous territories
+  "388":{name:"Jamaica",flag:"🇯🇲",region:"Caribbean",pop:"2.8M",gdp:"$17B",internet:"61%",sectors:["Tourism","Bauxite","Agriculture"]},
+  "630":{name:"Puerto Rico",flag:"🇵🇷",region:"Caribbean",pop:"3.2M",gdp:"$105B",internet:"77%",sectors:["Pharma","Manufacturing","Tourism"]},
+};
+
+// ── Story data ────────────────────────────────────────────────────────────────
+const STORIES = [
+  {id:1,  cat:"apt",   iso:"156", title:"China-Linked Hackers Use Malware Trio for Telecom Espionage",              source:"BankInfoSecurity",   date:"Mar 7",  score:9, lat:35.8, lng:104.2},
+  {id:2,  cat:"apt",   iso:"643", title:"GRU Sandworm Deploys New OT Malware Against Energy Sector",                source:"Wired",              date:"Mar 6",  score:9, lat:55.7, lng:37.6},
+  {id:3,  cat:"breach",iso:"840", title:"Change Healthcare Confirms 190M Patient Records Exposed",                  source:"Bleeping Computer",  date:"Mar 6",  score:8, lat:37.1, lng:-95.7},
+  {id:4,  cat:"apt",   iso:"364", title:"MuddyWater Targets U.S. Networks With New Dindoor Backdoor",               source:"The Hacker News",    date:"Mar 6",  score:8, lat:32.4, lng:53.7},
+  {id:5,  cat:"macro", iso:"840", title:"Tech Giants Rally for Anthropic in Pentagon AI Feud",                      source:"BankInfoSecurity",   date:"Mar 6",  score:7, lat:38.9, lng:-77.0},
+  {id:6,  cat:"breach",iso:"826", title:"Tycoon 2FA Phishing Platform Busted by Europol Operation",                 source:"Dark Reading",       date:"Mar 5",  score:8, lat:51.5, lng:-0.1},
+  {id:7,  cat:"vuln",  iso:"840", title:"CISA Adds Three Actively Exploited Ivanti CVEs to KEV Catalog",            source:"SANS ISC",           date:"Mar 5",  score:8, lat:37.1, lng:-95.7},
+  {id:8,  cat:"apt",   iso:"408", title:"Lazarus Group Pivots to Supply Chain Attacks on Financial Sector",          source:"Krebs on Security",  date:"Mar 4",  score:9, lat:40.3, lng:127.5},
+  {id:9,  cat:"gov",   iso:"056", title:"EU Cyber Resilience Act Enters Enforcement Phase",                          source:"Infosecurity",       date:"Mar 4",  score:7, lat:50.8, lng:4.4},
+  {id:10, cat:"breach",iso:"036", title:"Medibank Breach Settlement — $250M to Affected Patients",                   source:"Dark Reading",       date:"Mar 3",  score:7, lat:-25.3,lng:133.8},
+  {id:11, cat:"apt",   iso:"643", title:"Midnight Blizzard Expands from Government to NGO Targets",                  source:"Microsoft Security", date:"Mar 3",  score:8, lat:55.7, lng:37.6},
+  {id:12, cat:"vuln",  iso:"840", title:"Critical Cisco IOS XE Flaw Exploited in the Wild — Patch Now",             source:"Bleeping Computer",  date:"Mar 2",  score:9, lat:37.1, lng:-95.7},
+  {id:13, cat:"macro", iso:"840", title:"DOGE System Access Raises Federal Cybersecurity Alarm",                    source:"The Register",       date:"Mar 2",  score:8, lat:38.9, lng:-77.0},
+  {id:14, cat:"breach",iso:"356", title:"BSNL Telecom Data Leak Exposes 278M Customer Records",                     source:"Dark Reading",       date:"Feb 28", score:7, lat:20.6, lng:78.9},
+  {id:15, cat:"apt",   iso:"156", title:"Salt Typhoon Persists in U.S. Telecom Networks Despite Remediation",       source:"WSJ",                date:"Feb 27", score:9, lat:35.8, lng:104.2},
+  {id:16, cat:"gov",   iso:"840", title:"SEC Cyber Disclosure Rules Drive Board-Level Security Reporting",           source:"Infosecurity",       date:"Feb 26", score:7, lat:38.9, lng:-77.0},
+  {id:17, cat:"breach",iso:"276", title:"Rheinmetall Hit by BlackCat Ransomware — Military Data at Risk",            source:"Wired",              date:"Feb 24", score:8, lat:51.2, lng:10.4},
+  {id:18, cat:"apt",   iso:"364", title:"Iran-Backed Hackers Target Israeli Defense Contractors",                   source:"The Hacker News",    date:"Feb 22", score:8, lat:32.4, lng:53.7},
+  {id:19, cat:"apt",   iso:"156", title:"Volt Typhoon Pre-Positions in U.S. Critical Infrastructure",               source:"CISA Advisory",      date:"Feb 20", score:9, lat:35.8, lng:104.2},
+  {id:20, cat:"macro", iso:"840", title:"AI-Generated Phishing Surges 40% — Defenders Struggle to Keep Up",        source:"Dark Reading",       date:"Feb 20", score:8, lat:37.1, lng:-95.7},
+  {id:21, cat:"breach",iso:"643", title:"REvil Successor Claims Attack on Major U.S. Healthcare Provider",          source:"Bleeping Computer",  date:"Feb 18", score:8, lat:55.7, lng:37.6},
+  {id:22, cat:"apt",   iso:"408", title:"DPRK Hackers Steal $1.5B in Crypto — Largest Single Theft on Record",     source:"Chainalysis",        date:"Feb 15", score:9, lat:40.3, lng:127.5},
+  {id:23, cat:"vuln",  iso:"840", title:"Microsoft Patch Tuesday Fixes 6 Actively Exploited Zero-Days",             source:"SANS ISC",           date:"Feb 12", score:8, lat:37.1, lng:-95.7},
+  {id:24, cat:"gov",   iso:"840", title:"NIST CSF 2.0 Governance Function Reshapes CISO Accountability",            source:"NIST",               date:"Feb 10", score:7, lat:38.9, lng:-77.0},
+  {id:25, cat:"breach",iso:"036", title:"Optus Faces $1.5B Lawsuit Over 2022 Breach — Class Action Filed",          source:"The Register",       date:"Feb 8",  score:7, lat:-25.3,lng:133.8},
+];
+document.getElementById("story-count").textContent = STORIES.length;
+
+const CAT_LABEL={apt:"APT",breach:"Breach",vuln:"Vuln",gov:"Governance",macro:"Policy"};
+const CAT_COLOR={apt:"#a78bfa",breach:"#ef4444",vuln:"#f59e0b",gov:"#34d399",macro:"#60a5fa"};
+const cc=c=>CAT_COLOR[c]||"#64748b";
+const cl=c=>CAT_LABEL[c]||c;
+
+// Group stories
+const byIso={};
+STORIES.forEach(s=>{ if(!byIso[s.iso])byIso[s.iso]=[]; byIso[s.iso].push(s); });
+const byLoc={};
+STORIES.forEach(s=>{
+  const k=`${s.lat},${s.lng}`;
+  if(!byLoc[k])byLoc[k]={lat:s.lat,lng:s.lng,iso:s.iso,stories:[]};
+  byLoc[k].stories.push(s);
+});
+
+// ── Global feed ────────────────────────────────────────────────────────────────
+function renderGlobalFeed(){
+  const f=document.getElementById("global-feed"); f.innerHTML="";
+  STORIES.forEach(s=>{
+    const d=document.createElement("div"); d.className="feed-item";
+    d.innerHTML=`<div class="feed-bar" style="background:${cc(s.cat)}"></div>
+      <span class="cat-pill bg-${s.cat}">${cl(s.cat)}</span>
+      <div class="item-title">${s.title}</div>
+      <div class="item-meta"><span>${s.source}</span><span>·</span><span>${s.date}</span></div>`;
+    f.appendChild(d);
+  });
+}
+renderGlobalFeed();
+
+// ── Country detail ─────────────────────────────────────────────────────────────
+function showCountryDetail(iso){
+  // Merge: COUNTRY_DATA provides base data, COUNTRY_DB overrides with full detail
+  const db={...(COUNTRY_DATA[iso]||{}), ...(COUNTRY_DB[iso]||{})};
+  const stories=byIso[iso]||[];
+  const name=db.name||iso;
+  const flag=db.flag||"🌐";
+
+  document.getElementById("c-flag").textContent=flag;
+  document.getElementById("c-name").textContent=name;
+  document.getElementById("c-sub").textContent=[(db.capital||""),(db.region||"")].filter(Boolean).join(" · ");
+
+  // Stat grid
+  const sg=document.getElementById("c-stats");
+  sg.innerHTML=`
+    <div class="stat-card"><div class="stat-label">Population</div><div class="stat-value">${db.pop||"—"}</div></div>
+    <div class="stat-card"><div class="stat-label">GDP</div><div class="stat-value">${db.gdp||"—"}</div><div class="stat-sub">${db.gdp_rank?db.gdp_rank+" globally":""}</div></div>
+    <div class="stat-card"><div class="stat-label">Internet Reach</div><div class="stat-value">${db.internet||"—"}</div></div>
+    <div class="stat-card"><div class="stat-label">Top Sectors</div><div class="stat-value" style="font-size:10px;color:#94a3b8;font-weight:500;line-height:1.5">${(db.sectors||[]).slice(0,3).join(", ")||"—"}</div></div>`;
+
+  // ITU GCI
+  const ituEl=document.getElementById("c-itu");
+  if(db.itu_score!=null){
+    const pct=db.itu_score;
+    const tierColor=pct>=90?"#34d399":pct>=70?"#60a5fa":pct>=50?"#f59e0b":"#ef4444";
+    const tierBg=pct>=90?"rgba(52,211,153,.12)":pct>=70?"rgba(96,165,250,.12)":pct>=50?"rgba(245,158,11,.12)":"rgba(239,68,68,.12)";
+    ituEl.innerHTML=`
+      <div class="itu-header">
+        <span class="itu-label">ITU Global Cybersecurity Index</span>
+        <span>
+          <span class="itu-score" style="color:${tierColor}">${pct.toFixed(1)}/100</span>
+          <span class="itu-tier" style="background:${tierBg};color:${tierColor}">${db.itu_tier}</span>
+        </span>
+      </div>
+      <div class="itu-track"><div class="itu-fill" id="itu-fill-bar" style="width:0%;background:${tierColor}"></div></div>`;
+    setTimeout(()=>{ const b=document.getElementById("itu-fill-bar"); if(b)b.style.width=pct+"%"; },60);
+  } else { ituEl.innerHTML=""; }
+
+  // APT groups
+  const apts=db.apts||[];
+  const aptEl=document.getElementById("c-apts");
+  if(apts.length>0){
+    aptEl.innerHTML=apts.map(a=>`<span class="apt-chip">${a}</span>`).join("");
+  } else if(stories.length===0){
+    aptEl.innerHTML=`<span class="apt-none">No attributed groups in this period</span>`;
+  } else {
+    aptEl.innerHTML=`<span class="apt-none">No major APT attribution for this country</span>`;
+  }
+
+  // Coverage
+  const covEl=document.getElementById("c-coverage-body");
+  if(stories.length===0){
+    covEl.innerHTML=`<div style="font-size:11px;color:#334155;font-style:italic">No stories covering this country in the last 30 days.</div>`;
+    document.getElementById("c-stories-hdr").style.display="none";
+    document.getElementById("country-feed").innerHTML="";
+  } else {
+    const avg=stories.reduce((a,s)=>a+s.score,0)/stories.length;
+    const pct=Math.round((avg/10)*100);
+    const tColor=avg>=8.5?"#ef4444":avg>=7?"#f59e0b":"#34d399";
+    const tBg=avg>=8.5?"rgba(239,68,68,.15)":avg>=7?"rgba(245,158,11,.15)":"rgba(52,211,153,.15)";
+    const tLabel=avg>=8.5?"CRITICAL":avg>=7?"HIGH":"MODERATE";
+    const catCounts={};
+    stories.forEach(s=>{ catCounts[s.cat]=(catCounts[s.cat]||0)+1; });
+    const pills=Object.entries(catCounts).sort((a,b)=>b[1]-a[1])
+      .map(([c,n])=>`<span class="cat-pill bg-${c}">${cl(c)} ${n}</span>`).join("");
+    covEl.innerHTML=`
+      <div class="coverage-bar-row">
+        <span style="font-size:12px;color:#94a3b8"><strong style="color:#f1f5f9">${stories.length}</strong> stor${stories.length>1?"ies":"y"}</span>
+        <span class="threat-pill" style="background:${tBg};color:${tColor}">${tLabel}</span>
+        <span style="font-size:11px;color:#475569">avg ${avg.toFixed(1)}/10</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">${pills}</div>`;
+    document.getElementById("c-stories-hdr").style.display="block";
+    document.getElementById("c-stories-label").textContent=`Stories · ${name}`;
+    const feed=document.getElementById("country-feed"); feed.innerHTML="";
+    stories.sort((a,b)=>b.score-a.score).forEach(s=>{
+      const d=document.createElement("div"); d.className="feed-item";
+      d.innerHTML=`<div class="feed-bar" style="background:${cc(s.cat)}"></div>
+        <span class="cat-pill bg-${s.cat}">${cl(s.cat)}</span>
+        <div class="item-title">${s.title}</div>
+        <div class="item-meta">
+          <span><span class="score-dot" style="background:${cc(s.cat)}"></span>${s.score}/10</span>
+          <span>·</span><span>${s.source}</span><span>·</span><span>${s.date}</span>
+        </div>`;
+      feed.appendChild(d);
+    });
+  }
+
+  document.getElementById("view-global").style.display="none";
+  document.getElementById("view-country").style.display="flex";
+}
+
+function showGlobalView(){
+  document.getElementById("view-global").style.display="flex";
+  document.getElementById("view-country").style.display="none";
+}
+
+document.getElementById("back-btn").addEventListener("click",()=>{ showGlobalView(); zoomOut(); });
+
+// ── D3 Map ────────────────────────────────────────────────────────────────────
+const wrap=document.getElementById("map-wrap");
+let W=wrap.clientWidth, H=wrap.clientHeight;
+const svg=d3.select("#map").attr("width",W).attr("height",H);
+const g=svg.append("g");
+const proj=d3.geoNaturalEarth1().scale(W/5.8).translate([W/2,H/2]);
+const path=d3.geoPath().projection(proj);
+const grat=d3.geoGraticule().step([30,30]);
+g.append("path").datum(grat()).attr("class","grid-line").attr("fill","none").attr("d",path);
+
+fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
+  .then(r=>r.json())
+  .then(world=>{
+    const countries=topojson.feature(world,world.objects.countries);
+    g.selectAll(".country").data(countries.features).enter().append("path")
+      .attr("class","country").attr("d",path)
+      .on("click",(ev,d)=>{ if(d.id==null||isNaN(d.id))return; const iso=String(d.id).padStart(3,"0"); zoomToFeature(d,iso); })
+      .on("mousemove",(ev,d)=>{
+        if(d.id==null||isNaN(d.id))return;
+        const iso=String(d.id).padStart(3,"0");
+        const cd={...(COUNTRY_DATA[iso]||{}), ...(COUNTRY_DB[iso]||{})}; const stories=byIso[iso]||[];
+        if(!cd.name&&!stories.length) return;
+        const countryName=cd.name||iso;
+        const countryFlag=cd.flag||"";
+        const tt=document.getElementById("tooltip");
+        const top3=stories.slice(0,3).map(s=>`<div class="tt-story">${s.title}</div>`).join("");
+        const noStories=stories.length===0?`<div class="tt-foot">No coverage in this period</div>`:`<div class="tt-foot">${stories.length} stor${stories.length>1?"ies":"y"} · click to explore</div>`;
+        tt.innerHTML=`<h4>${countryFlag} ${countryName}</h4>${top3}${noStories}`;
+        tt.classList.add("show");
+        const r=wrap.getBoundingClientRect();
+        let tx=ev.clientX-r.left+14,ty=ev.clientY-r.top-10;
+        if(tx+250>W)tx-=265; if(ty+160>H)ty-=140;
+        tt.style.left=tx+"px"; tt.style.top=ty+"px";
+      })
+      .on("mouseleave",()=>document.getElementById("tooltip").classList.remove("show"));
+
+    // Pulses
+    const pg=svg.append("g");
+    Object.values(byLoc).forEach(loc=>{
+      const [x,y]=proj([loc.lng,loc.lat]);
+      if(!x||!y) return;
+      const dom=loc.stories.reduce((a,b)=>a.score>b.score?a:b);
+      const cat=dom.cat;
+      const grp=pg.append("g").attr("class","pulse-group").attr("transform",`translate(${x},${y})`).attr("data-iso",loc.iso);
+      [0,1,2].forEach(j=>grp.append("circle").attr("class",`pulse-ring pulse-${cat}`).attr("r",4).style("animation-delay",`${j}s`));
+      grp.append("circle").attr("class",`pulse-core core-${cat}`)
+        .attr("r",Math.min(3+loc.stories.length*1.8,10))
+        .style("filter",`drop-shadow(0 0 5px ${cc(cat)})`);
+      grp.on("click",(ev)=>{ ev.stopPropagation();
+        const feat=countries.features.find(f=>String(f.id).padStart(3,"0")===loc.iso);
+        zoomToFeature(feat||null,loc.iso,x,y); })
+      .on("mousemove",(ev)=>{
+        const db=COUNTRY_DB[loc.iso]||{};
+        const tt=document.getElementById("tooltip");
+        const top3=loc.stories.slice(0,3).map(s=>`<div class="tt-story">${s.title}</div>`).join("");
+        tt.innerHTML=`<h4>${db.flag||""} ${db.name||loc.iso}</h4>${top3}<div class="tt-foot">${loc.stories.length} stories · click to explore</div>`;
+        tt.classList.add("show");
+        const r=wrap.getBoundingClientRect();
+        let tx=ev.clientX-r.left+14,ty=ev.clientY-r.top-10;
+        if(tx+250>W)tx-=265; if(ty+160>H)ty-=140;
+        tt.style.left=tx+"px"; tt.style.top=ty+"px";
+      })
+      .on("mouseleave",()=>document.getElementById("tooltip").classList.remove("show"));
+    });
+  });
+
+function zoomToFeature(feature,iso,fx,fy){
+  document.getElementById("tooltip").classList.remove("show");
+  let tx,ty,scale;
+  if(feature){
+    const [[x0,y0],[x1,y1]]=path.bounds(feature);
+    const dx=x1-x0,dy=y1-y0,cx=(x0+x1)/2,cy=(y0+y1)/2;
+    scale=Math.min(Math.max(0.65/Math.max(dx/W,dy/H),2),10);
+    tx=W/2-scale*cx; ty=H/2-scale*cy;
+  } else { scale=5; tx=W/2-scale*fx; ty=H/2-scale*fy; }
+  g.transition().duration(800).ease(d3.easeCubicInOut).attr("transform",`translate(${tx},${ty}) scale(${scale})`);
+  svg.select(".pulse-layer").transition().duration(800).ease(d3.easeCubicInOut).attr("transform",`translate(${tx},${ty}) scale(${scale})`);
+  if(feature){ g.selectAll(".country").classed("selected",d=>d===feature).classed("dimmed",d=>d!==feature); }
+  // Hide ALL pulse dots when zoomed in (they're at global-view coordinates, not scaled)
+  svg.selectAll(".pulse-group").style("opacity",0).style("pointer-events","none");
+  document.getElementById("zoom-out-btn").style.display="flex";
+  const cd={...(COUNTRY_DATA[iso]||{}), ...(COUNTRY_DB[iso]||{})};
+  document.getElementById("map-title").textContent=(cd.flag||"")+" "+(cd.name||"Country");
+  document.getElementById("map-subtitle").textContent="Click ← to return to global view";
+  showCountryDetail(iso);
+}
+
+function zoomOut(){
+  g.transition().duration(700).ease(d3.easeCubicInOut).attr("transform","")
+    .on("end", ()=>{
+      // Fade dots back in only after zoom-out transition completes
+      svg.selectAll(".pulse-group")
+        .transition().duration(350)
+        .style("opacity",1)
+        .style("pointer-events","all");
+    });
+  svg.select(".pulse-layer")&&svg.select(".pulse-layer").transition().duration(700).ease(d3.easeCubicInOut).attr("transform","");
+  g.selectAll(".country").classed("selected",false).classed("dimmed",false);
+  document.getElementById("zoom-out-btn").style.display="none";
+  document.getElementById("map-title").textContent="Global Threat Coverage";
+  document.getElementById("map-subtitle").textContent=`Click any country to explore · ${STORIES.length} stories tracked`;
+}
+document.getElementById("zoom-out-btn").addEventListener("click",()=>{ showGlobalView(); zoomOut(); });
+
+window.addEventListener("resize",()=>{
+  W=wrap.clientWidth; H=wrap.clientHeight;
+  svg.attr("width",W).attr("height",H);
+  proj.scale(W/5.8).translate([W/2,H/2]);
+  g.selectAll(".country").attr("d",path);
+  g.selectAll(".grid-line").attr("d",path);
+});
+</script>
+</body>
+</html>

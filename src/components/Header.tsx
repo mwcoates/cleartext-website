@@ -23,6 +23,13 @@ export default function Header() {
           <Link href="/" className="hover:text-white transition-colors">
             Episodes
           </Link>
+          <Link
+            href="/radar"
+            className="flex items-center gap-1.5 hover:text-white transition-colors"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            Radar
+          </Link>
           <Link href="/about" className="hover:text-white transition-colors">
             About
           </Link>
