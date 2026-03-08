@@ -16,6 +16,7 @@ export const metadata: Metadata = {
     "Daily cybersecurity news and analysis for CISOs and security leaders. New episodes every weekday morning.",
   openGraph: {
     type: "website",
+    url: "https://cleartext.fm",
     siteName: "Cleartext",
     images: [
       {
