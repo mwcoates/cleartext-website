@@ -107,7 +107,7 @@ export default async function Home() {
       </section>
 
       {/* ── Latest Episode ── */}
-      <section className="max-w-5xl mx-auto px-6 pt-14">
+      <section id="episodes" className="max-w-5xl mx-auto px-6 pt-14">
         {latest && <EpisodeCard episode={latest} featured />}
       </section>
 

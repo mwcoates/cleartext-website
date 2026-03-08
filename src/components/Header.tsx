@@ -20,7 +20,7 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-6 text-sm text-slate-400">
-          <Link href="/" className="hover:text-white transition-colors">
+          <Link href="/#episodes" className="hover:text-white transition-colors">
             Episodes
           </Link>
           <Link
