@@ -53,7 +53,7 @@ export default async function Home() {
             style={{ height: "58vh", minHeight: "400px" }}
           >
             <iframe
-              src="/threat-radar-mockup.html"
+              src="/threat-radar-mockup.html?embed=1"
               className="w-full h-full border-0"
               title="30-Day Threat Radar"
             />

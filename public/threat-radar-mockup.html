@@ -118,7 +118,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
 .radar-cta-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:11px 14px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);border-radius:8px;color:#22d3ee;font-size:12px;font-weight:600;text-decoration:none;transition:all .2s;cursor:pointer;pointer-events:all;backdrop-filter:blur(4px)}
 .radar-cta-btn:hover{background:rgba(34,211,238,.18);border-color:rgba(34,211,238,.5);color:#67e8f9}
 body.embedded .radar-cta{display:block}
-body.embedded .story-scroll{display:none}
+body.embedded #country-feed{display:none}
 body.embedded #c-stories-hdr{display:none!important}
 .feed-item{padding:12px 20px;border-bottom:1px solid #0a1628;position:relative;transition:background .15s;cursor:pointer}
 .feed-item:hover{background:#0a1628}
@@ -219,8 +219,8 @@ body.embedded #c-stories-hdr{display:none!important}
 </div>
 
 <script>
-// ── Detect if running inside an iframe (embedded on homepage) ─────────────────
-if(window !== window.parent) document.body.classList.add('embedded');
+// ── Detect if running in embedded mode (homepage compact view) ────────────────
+if(new URLSearchParams(window.location.search).get('embed')==='1') document.body.classList.add('embedded');
 
 // ── Country intelligence database ─────────────────────────────────────────────
 const COUNTRY_DB = {
