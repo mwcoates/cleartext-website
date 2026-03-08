@@ -112,6 +112,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
 .story-scroll{flex:1;overflow-y:auto}
 .story-scroll::-webkit-scrollbar{width:3px}
 .story-scroll::-webkit-scrollbar-thumb{background:#1e293b;border-radius:2px}
+
+/* Embedded-mode CTA — replaces story list with a "open full radar" button */
+.radar-cta{display:none;padding:14px 20px;flex-shrink:0}
+.radar-cta-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px 14px;background:rgba(34,211,238,.07);border:1px solid rgba(34,211,238,.2);border-radius:8px;color:#22d3ee;font-size:12px;font-weight:600;text-decoration:none;transition:all .2s;cursor:pointer}
+.radar-cta-btn:hover{background:rgba(34,211,238,.14);border-color:rgba(34,211,238,.4);color:#67e8f9}
+body.embedded .radar-cta{display:block}
+body.embedded .story-scroll{display:none}
+body.embedded #c-stories-hdr{display:none!important}
 .feed-item{padding:12px 20px;border-bottom:1px solid #0a1628;position:relative;transition:background .15s;cursor:pointer}
 .feed-item:hover{background:#0a1628}
 .feed-bar{position:absolute;left:0;top:0;bottom:0;width:2px}
@@ -195,6 +203,13 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
         <div id="c-coverage-body"></div>
       </div>
 
+      <div class="radar-cta" id="c-radar-cta">
+        <a id="c-radar-link" class="radar-cta-btn" href="/radar" target="_top">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          <span id="c-radar-label">View stories on full Radar</span>
+        </a>
+      </div>
+
       <div class="sidebar-hdr" id="c-stories-hdr" style="padding-top:10px;display:none">
         <h3 id="c-stories-label">Stories</h3>
       </div>
@@ -204,6 +219,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
 </div>
 
 <script>
+// ── Detect if running inside an iframe (embedded on homepage) ─────────────────
+if(window !== window.parent) document.body.classList.add('embedded');
+
 // ── Country intelligence database ─────────────────────────────────────────────
 const COUNTRY_DB = {
   "156": { name:"China", flag:"🇨🇳", region:"East Asia", capital:"Beijing",
@@ -567,6 +585,14 @@ function showCountryDetail(iso){
     aptEl.innerHTML=`<span class="apt-none">No attributed groups in this period</span>`;
   } else {
     aptEl.innerHTML=`<span class="apt-none">No major APT attribution for this country</span>`;
+  }
+
+  // Embedded CTA — update label with country name + story count
+  const radarLabel=document.getElementById("c-radar-label");
+  if(radarLabel){
+    radarLabel.textContent = stories.length>0
+      ? `View ${stories.length} ${name} stor${stories.length>1?"ies":"y"} on full Radar`
+      : `Explore ${name} on full Radar`;
   }
 
   // Coverage
