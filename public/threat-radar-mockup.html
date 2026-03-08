@@ -56,7 +56,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
 /* Sidebar */
 .sidebar{border-left:1px solid #1e293b;background:#050d1a;display:flex;flex-direction:column;overflow:hidden}
 #view-global{display:flex;flex-direction:column;height:100%}
-#view-country{display:none;flex-direction:column;height:100%;overflow:hidden;animation:slide-in .3s ease}
+#view-country{display:none;flex-direction:column;height:100%;overflow:hidden;animation:slide-in .3s ease;position:relative}
 @keyframes slide-in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
 
 .sidebar-hdr{padding:14px 20px 10px;border-bottom:1px solid #1e293b;flex-shrink:0}
@@ -113,10 +113,10 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
 .story-scroll::-webkit-scrollbar{width:3px}
 .story-scroll::-webkit-scrollbar-thumb{background:#1e293b;border-radius:2px}
 
-/* Embedded-mode CTA — replaces story list with a "open full radar" button */
-.radar-cta{display:none;padding:14px 20px;flex-shrink:0}
-.radar-cta-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px 14px;background:rgba(34,211,238,.07);border:1px solid rgba(34,211,238,.2);border-radius:8px;color:#22d3ee;font-size:12px;font-weight:600;text-decoration:none;transition:all .2s;cursor:pointer}
-.radar-cta-btn:hover{background:rgba(34,211,238,.14);border-color:rgba(34,211,238,.4);color:#67e8f9}
+/* Embedded-mode CTA — pinned to bottom of sidebar, always visible */
+.radar-cta{display:none;position:absolute;bottom:0;left:0;right:0;padding:28px 16px 14px;background:linear-gradient(to bottom,transparent,#050d1a 40%);z-index:20;pointer-events:none}
+.radar-cta-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:11px 14px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);border-radius:8px;color:#22d3ee;font-size:12px;font-weight:600;text-decoration:none;transition:all .2s;cursor:pointer;pointer-events:all;backdrop-filter:blur(4px)}
+.radar-cta-btn:hover{background:rgba(34,211,238,.18);border-color:rgba(34,211,238,.5);color:#67e8f9}
 body.embedded .radar-cta{display:block}
 body.embedded .story-scroll{display:none}
 body.embedded #c-stories-hdr{display:none!important}
