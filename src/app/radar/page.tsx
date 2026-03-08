@@ -7,7 +7,15 @@ export const metadata: Metadata = {
     "30-day interactive global cybersecurity threat landscape. Track active threat actors, data breaches, and vulnerabilities by country — powered by Cleartext.",
 };
 
-export default function RadarPage() {
+export default function RadarPage({
+  searchParams,
+}: {
+  searchParams: { country?: string };
+}) {
+  const iframeSrc = searchParams?.country
+    ? `/threat-radar-mockup.html?country=${searchParams.country}`
+    : `/threat-radar-mockup.html`;
+
   return (
     <div className="flex flex-col" style={{ height: "calc(100vh - 57px)" }}>
       {/* Subscribe nudge bar */}
@@ -46,7 +54,7 @@ export default function RadarPage() {
 
       {/* Full-screen radar */}
       <iframe
-        src="/threat-radar-mockup.html"
+        src={iframeSrc}
         className="flex-1 w-full border-0"
         title="30-Day Global Threat Radar"
       />

@@ -587,7 +587,9 @@ function showCountryDetail(iso){
     aptEl.innerHTML=`<span class="apt-none">No major APT attribution for this country</span>`;
   }
 
-  // Embedded CTA — update label with country name + story count
+  // Embedded CTA — update label and deep-link href with country ISO
+  const radarLink=document.getElementById("c-radar-link");
+  if(radarLink) radarLink.href='/radar?country='+iso;
   const radarLabel=document.getElementById("c-radar-label");
   if(radarLabel){
     radarLabel.textContent = stories.length>0
@@ -709,6 +711,13 @@ fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
       })
       .on("mouseleave",()=>document.getElementById("tooltip").classList.remove("show"));
     });
+
+    // Auto-zoom if deep-linked from embedded CTA (e.g. /radar?country=840)
+    const autoCountry=new URLSearchParams(window.location.search).get('country');
+    if(autoCountry){
+      const feat=countries.features.find(f=>String(f.id).padStart(3,"0")===autoCountry);
+      zoomToFeature(feat||null,autoCountry);
+    }
   });
 
 function zoomToFeature(feature,iso,fx,fy){
