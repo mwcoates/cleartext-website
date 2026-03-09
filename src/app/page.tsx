@@ -35,6 +35,9 @@ export default async function Home() {
               <p className="text-slate-500 text-sm mt-1">
                 Click any country to explore active threats, APT groups, and recent Cleartext stories
               </p>
+              <p className="text-slate-600 text-xs mt-1.5">
+                Synthesized from 16 leading security publications — Krebs, Wired, Bleeping Computer, CISA &amp; more
+              </p>
             </div>
             <Link
               href="/radar"
@@ -62,8 +65,8 @@ export default async function Home() {
           {/* Below-map CTA row */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-3">
             <p className="text-slate-500 text-xs leading-relaxed max-w-md">
-              Each dot represents stories Cleartext has covered in the last 30 days.
-              Subscribe to hear them daily.
+              Each dot is a story we&apos;ve covered in the last 30 days.{" "}
+              <span className="text-slate-400">Get the full briefing in your ears every morning.</span>
             </p>
             <div className="flex items-center gap-3 flex-shrink-0">
               <Link
@@ -99,8 +102,11 @@ export default async function Home() {
           <p className="text-lg text-slate-400 mb-2 leading-relaxed">
             Daily cybersecurity briefing for CISOs and security leaders.
           </p>
-          <p className="text-slate-600 text-sm mb-8">
+          <p className="text-slate-500 text-sm mb-1">
             New episodes Monday–Friday · Week in Review every Saturday
+          </p>
+          <p className="text-slate-600 text-xs mb-8">
+            Synthesized from 16 leading security publications daily
           </p>
           <SubscribeButtons />
         </div>

@@ -42,16 +42,7 @@ export default function SubscribeButtons({ compact = false }: Props) {
         Apple Podcasts
       </a>
 
-      {/* RSS */}
-      <a
-        href={RSS_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`${base} bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700`}
-      >
-        <RssIcon />
-        RSS
-      </a>
+      {/* RSS — kept for podcast app discovery, hidden from UI */}
     </div>
   );
 }
