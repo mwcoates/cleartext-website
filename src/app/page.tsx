@@ -39,15 +39,18 @@ export default async function Home() {
                 Synthesized from 16 leading security publications — Krebs, Wired, Bleeping Computer, CISA &amp; more
               </p>
             </div>
-            <Link
-              href="/radar"
-              className="flex-shrink-0 hidden sm:flex items-center gap-1.5 text-sm text-cyan-400 hover:text-cyan-300 transition-colors font-medium mt-1"
-            >
-              Full screen
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </Link>
+            <div className="flex-shrink-0 hidden sm:flex flex-col items-end gap-3 mt-1">
+              <Link
+                href="/radar"
+                className="flex items-center gap-1.5 text-sm text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
+              >
+                Full screen
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </Link>
+              <SubscribeButtons compact />
+            </div>
           </div>
 
           {/* Radar iframe */}
@@ -62,16 +65,16 @@ export default async function Home() {
             />
           </div>
 
-          {/* Below-map CTA row */}
+          {/* Below-map caption + mobile CTA */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-3">
             <p className="text-slate-500 text-xs leading-relaxed max-w-md">
               Each dot is a story we&apos;ve covered in the last 30 days.{" "}
               <span className="text-slate-400">Get the full briefing in your ears every morning.</span>
             </p>
-            <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-3 flex-shrink-0 sm:hidden">
               <Link
                 href="/radar"
-                className="text-xs text-slate-400 hover:text-white transition-colors sm:hidden"
+                className="text-xs text-slate-400 hover:text-white transition-colors"
               >
                 Full screen →
               </Link>
