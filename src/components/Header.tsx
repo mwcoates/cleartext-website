@@ -33,14 +33,6 @@ export default function Header() {
           <Link href="/about" className="hover:text-white transition-colors">
             About
           </Link>
-          <a
-            href="https://storage.googleapis.com/cleartext-podcast/feed.xml"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white transition-colors"
-          >
-            RSS
-          </a>
         </nav>
       </div>
     </header>
