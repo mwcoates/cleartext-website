@@ -10,9 +10,36 @@ const RSS_URL =
 
 interface Props {
   compact?: boolean;
+  muted?: boolean; // text-link style for secondary "or listen on" contexts
 }
 
-export default function SubscribeButtons({ compact = false }: Props) {
+export default function SubscribeButtons({ compact = false, muted = false }: Props) {
+  // muted: plain text links — clearly secondary to the email CTA
+  if (muted) {
+    return (
+      <div className="flex flex-wrap items-center gap-4">
+        <a
+          href={SPOTIFY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-[#1DB954] transition-colors"
+        >
+          <SpotifyIcon />
+          Spotify
+        </a>
+        <a
+          href={APPLE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-[#a855f7] transition-colors"
+        >
+          <AppleIcon />
+          Apple Podcasts
+        </a>
+      </div>
+    );
+  }
+
   const base = compact
     ? "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
     : "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all";
@@ -27,8 +54,7 @@ export default function SubscribeButtons({ compact = false }: Props) {
         className={`${base} bg-[#1DB954] text-black hover:bg-[#1ed760] hover:scale-105`}
       >
         <SpotifyIcon />
-        {!compact && "Spotify"}
-        {compact && "Spotify"}
+        Spotify
       </a>
 
       {/* Apple Podcasts */}

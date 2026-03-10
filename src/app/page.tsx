@@ -45,10 +45,10 @@ export default async function Home() {
               {/* Primary CTA: email */}
               <EmailSignup />
 
-              {/* Secondary: podcast apps */}
+              {/* Secondary: podcast apps — muted so email stays the hero CTA */}
               <div className="flex items-center gap-3 mt-3 flex-wrap">
                 <span className="text-xs text-slate-600">or listen on</span>
-                <SubscribeButtons compact />
+                <SubscribeButtons muted />
               </div>
             </div>
 
@@ -65,10 +65,7 @@ export default async function Home() {
           </div>
 
           {/* Radar iframe */}
-          <div
-            className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950"
-            style={{ height: "58vh", minHeight: "400px" }}
-          >
+          <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 h-[300px] sm:h-[420px] lg:h-[520px]">
             <iframe
               src="/threat-radar-mockup.html?embed=1"
               className="w-full h-full border-0"
