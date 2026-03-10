@@ -61,6 +61,19 @@ body {
   margin-top: 2rem;
 }
 
+.show-notes-content h4 {
+  padding-top: 1.25rem;
+  margin-top: 1.25rem;
+  border-top: 1px solid #1e293b;
+}
+
+/* First story under each category header: no top border */
+.show-notes-content h3 + h4 {
+  border-top: none;
+  margin-top: 0.5rem;
+  padding-top: 0;
+}
+
 .show-notes-content blockquote {
   border-left-color: #22d3ee;
   background: #0f172a;
