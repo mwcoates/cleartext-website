@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getEpisodes, LOGO_URL } from "@/lib/episodes";
 import EpisodeCard from "@/components/EpisodeCard";
 import SubscribeButtons from "@/components/SubscribeButtons";
+import EmailSignup from "@/components/EmailSignup";
 import type { Metadata } from "next";
 
 export const revalidate = 3600; // Re-fetch from GCS every hour
@@ -112,6 +113,23 @@ export default async function Home() {
             Synthesized from 16 leading security publications daily
           </p>
           <SubscribeButtons />
+        </div>
+      </section>
+
+      {/* ── Email Signup ── */}
+      <section className="border-b border-slate-800">
+        <div className="max-w-5xl mx-auto px-6 py-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div>
+              <h2 className="text-lg font-semibold text-white mb-1">
+                Get the briefing in your inbox
+              </h2>
+              <p className="text-slate-400 text-sm">
+                The daily Cleartext briefing — stories, CISO angles, and links — delivered every morning.
+              </p>
+            </div>
+            <EmailSignup />
+          </div>
         </div>
       </section>
 
