@@ -78,11 +78,11 @@ const WELCOME_HTML = `<!DOCTYPE html>
               <div style="font-size:14px;color:#94a3b8;margin-bottom:16px;line-height:1.5;">
                 Cleartext tracks 30 days of global cybersecurity incidents on an interactive threat map &mdash; updated daily.
               </div>
-              <a href="https://cleartext.fm/threat-radar" style="display:block;text-decoration:none;">
+              <a href="https://cleartext.fm" style="display:block;text-decoration:none;">
                 <img src="${RADAR_SCREENSHOT_URL}" alt="Global Threat Radar — 30-day cybersecurity incident map" width="600" style="display:block;width:100%;max-width:600px;border-radius:10px;border:1px solid #1e293b;" />
               </a>
               <div style="margin-top:10px;text-align:center;">
-                <a href="https://cleartext.fm/threat-radar" style="font-size:13px;color:#22d3ee;text-decoration:none;font-weight:600;">Explore the live threat radar →</a>
+                <a href="https://cleartext.fm" style="font-size:13px;color:#22d3ee;text-decoration:none;font-weight:600;">Explore the live threat radar →</a>
               </div>
             </td>
           </tr>
