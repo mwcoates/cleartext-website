@@ -20,48 +20,45 @@ export default async function Home() {
     <>
       {/* ── Hero + Radar ── */}
       <section className="border-b border-slate-800">
-        <div className="max-w-5xl mx-auto px-6 pt-10 pb-6">
+        <div className="max-w-5xl mx-auto px-6 pt-12 pb-6">
 
-          {/* Hero header */}
-          <div className="flex items-start justify-between gap-6 mb-5">
-            <div className="flex-1 min-w-0">
-              {/* Live badge */}
-              <div className="flex items-center gap-2 mb-3">
-                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse inline-block" />
-                <span className="text-xs font-semibold uppercase tracking-widest text-cyan-500">
-                  Live · 30-Day Global Coverage
-                </span>
-              </div>
+          {/* Hero — centered */}
+          <div className="text-center mb-8">
 
-              {/* Brand + value prop */}
-              <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-2">
-                Cleartext
-              </h1>
-              <p className="text-base sm:text-lg text-slate-300 mb-5 leading-relaxed">
-                Daily cybersecurity briefing for CISOs and security leaders —
-                synthesized from 16 leading publications every morning.
-              </p>
-
-              {/* Primary CTA: podcast apps */}
-              <SubscribeButtons />
-
-              {/* Secondary: email */}
-              <div className="flex items-center gap-3 mt-4 flex-wrap">
-                <span className="text-xs text-slate-600">or get it in your inbox</span>
-                <EmailSignup compact />
-              </div>
+            {/* Live badge */}
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse inline-block" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-cyan-500">
+                Live · 30-Day Global Coverage
+              </span>
             </div>
 
-            {/* Full screen link — desktop only */}
-            <Link
-              href="/radar"
-              className="flex-shrink-0 hidden sm:flex items-center gap-1.5 text-sm text-cyan-400 hover:text-cyan-300 transition-colors font-medium pt-1"
-            >
-              Full screen
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </Link>
+            {/* Brand */}
+            <h1 className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-3">
+              Cleartext
+            </h1>
+
+            {/* Value prop */}
+            <p className="text-base sm:text-lg text-slate-400 mb-8 leading-relaxed max-w-lg mx-auto">
+              Daily cybersecurity briefing for CISOs and security leaders —
+              synthesized from 16 leading publications every morning.
+            </p>
+
+            {/* Primary CTA: podcast apps */}
+            <SubscribeButtons />
+
+            {/* Divider */}
+            <div className="flex items-center gap-4 max-w-xs mx-auto my-5">
+              <div className="flex-1 h-px bg-slate-800" />
+              <span className="text-xs text-slate-600 whitespace-nowrap">or get it in your inbox</span>
+              <div className="flex-1 h-px bg-slate-800" />
+            </div>
+
+            {/* Secondary CTA: email */}
+            <div className="flex justify-center">
+              <EmailSignup />
+            </div>
+
           </div>
 
           {/* Radar iframe */}
@@ -80,7 +77,7 @@ export default async function Home() {
             </p>
             <Link
               href="/radar"
-              className="text-xs text-slate-500 hover:text-white transition-colors sm:hidden"
+              className="text-xs text-slate-500 hover:text-white transition-colors"
             >
               Full screen →
             </Link>
@@ -115,14 +112,16 @@ export default async function Home() {
             Never miss a briefing
           </h2>
           <p className="text-slate-400 text-sm mb-7 max-w-sm mx-auto">
-            Subscribe on your favorite platform — new episodes every weekday morning.
+            New episodes every weekday morning — subscribe wherever you listen.
           </p>
-          <div className="flex flex-col items-center gap-4">
-            <SubscribeButtons />
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-slate-600">or get it in your inbox</span>
-              <EmailSignup compact />
-            </div>
+          <SubscribeButtons />
+          <div className="flex items-center gap-4 max-w-xs mx-auto my-5">
+            <div className="flex-1 h-px bg-slate-800" />
+            <span className="text-xs text-slate-600 whitespace-nowrap">or get it in your inbox</span>
+            <div className="flex-1 h-px bg-slate-800" />
+          </div>
+          <div className="flex justify-center">
+            <EmailSignup />
           </div>
         </div>
       </section>
