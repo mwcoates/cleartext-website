@@ -18,48 +18,50 @@ export default async function Home() {
 
   return (
     <>
-      {/* ── Threat Radar Hero ── */}
+      {/* ── Hero + Radar ── */}
       <section className="border-b border-slate-800">
         <div className="max-w-5xl mx-auto px-6 pt-10 pb-6">
-          {/* Section header */}
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <div className="flex items-center gap-2 mb-1.5">
+
+          {/* Hero header */}
+          <div className="flex items-start justify-between gap-6 mb-5">
+            <div className="flex-1 min-w-0">
+              {/* Live badge */}
+              <div className="flex items-center gap-2 mb-3">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse inline-block" />
                 <span className="text-xs font-semibold uppercase tracking-widest text-cyan-500">
-                  Live · 30-Day Coverage
+                  Live · 30-Day Global Coverage
                 </span>
               </div>
-              <h2 className="text-2xl font-bold text-white leading-tight">
-                Global Threat Landscape
-              </h2>
-              <p className="text-slate-500 text-sm mt-1">
-                Click any country to explore active threats, APT groups, and recent Cleartext stories
-              </p>
-              <p className="text-slate-600 text-xs mt-1.5">
-                Synthesized from 16 leading security publications — Krebs, Wired, Bleeping Computer, CISA &amp; more
-              </p>
-            </div>
-            <div className="flex-shrink-0 hidden sm:flex flex-col items-end gap-3 mt-1">
-              <Link
-                href="/radar"
-                className="flex items-center gap-1.5 text-sm text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
-              >
-                Full screen
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </Link>
-              <SubscribeButtons compact />
-            </div>
-          </div>
 
-          {/* Email signup — above radar */}
-          <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900/40 px-4 py-3">
-            <p className="text-slate-400 text-sm flex-shrink-0">
-              Get the daily briefing in your inbox →
-            </p>
-            <EmailSignup />
+              {/* Brand + value prop */}
+              <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-2">
+                Cleartext
+              </h1>
+              <p className="text-base sm:text-lg text-slate-300 mb-5 leading-relaxed">
+                Daily cybersecurity briefing for CISOs and security leaders —
+                synthesized from 16 leading publications every morning.
+              </p>
+
+              {/* Primary CTA: email */}
+              <EmailSignup />
+
+              {/* Secondary: podcast apps */}
+              <div className="flex items-center gap-3 mt-3 flex-wrap">
+                <span className="text-xs text-slate-600">or listen on</span>
+                <SubscribeButtons compact />
+              </div>
+            </div>
+
+            {/* Full screen link — desktop only */}
+            <Link
+              href="/radar"
+              className="flex-shrink-0 hidden sm:flex items-center gap-1.5 text-sm text-cyan-400 hover:text-cyan-300 transition-colors font-medium pt-1"
+            >
+              Full screen
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </Link>
           </div>
 
           {/* Radar iframe */}
@@ -70,14 +72,14 @@ export default async function Home() {
             <iframe
               src="/threat-radar-mockup.html?embed=1"
               className="w-full h-full border-0"
-              title="30-Day Threat Radar"
+              title="30-Day Global Threat Radar"
             />
           </div>
 
-          {/* Below-map caption + mobile full-screen link */}
+          {/* Below-map caption */}
           <div className="mt-3 flex items-center justify-between">
             <p className="text-slate-600 text-xs">
-              Each dot is a story covered in the last 30 days.
+              Each dot is a story tracked in the last 30 days · Mon–Fri + Week in Review Saturday
             </p>
             <Link
               href="/radar"
@@ -86,37 +88,7 @@ export default async function Home() {
               Full screen →
             </Link>
           </div>
-        </div>
-      </section>
 
-      {/* ── Podcast Hero ── */}
-      <section className="relative overflow-hidden border-b border-slate-800">
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-cyan-950/10 via-slate-950 to-slate-950 pointer-events-none"
-        />
-        <div className="relative max-w-3xl mx-auto px-6 py-14 text-center">
-          <Image
-            src={LOGO_URL}
-            alt="Cleartext"
-            width={80}
-            height={80}
-            className="rounded-2xl mx-auto mb-5 shadow-2xl shadow-cyan-500/20"
-            priority
-          />
-          <h1 className="text-4xl font-bold text-white tracking-tight mb-3">
-            Cleartext
-          </h1>
-          <p className="text-lg text-slate-400 mb-2 leading-relaxed">
-            Daily cybersecurity briefing for CISOs and security leaders.
-          </p>
-          <p className="text-slate-500 text-sm mb-1">
-            New episodes Monday–Friday · Week in Review every Saturday
-          </p>
-          <p className="text-slate-600 text-xs mb-8">
-            Synthesized from 16 leading security publications daily
-          </p>
-          <SubscribeButtons />
         </div>
       </section>
 
@@ -139,17 +111,22 @@ export default async function Home() {
         </section>
       )}
 
-      {/* ── Subscribe CTA ── */}
+      {/* ── Bottom Subscribe CTA ── */}
       <section className="max-w-5xl mx-auto px-6 py-16">
         <div className="border border-slate-800 bg-slate-900/30 rounded-2xl p-10 text-center">
-          <h2 className="text-2xl font-bold text-white mb-3">
+          <h2 className="text-2xl font-bold text-white mb-2">
             Never miss a briefing
           </h2>
-          <p className="text-slate-400 mb-8 max-w-md mx-auto">
-            Subscribe on your favorite platform and get the security headlines
-            that matter — delivered to your ears every morning.
+          <p className="text-slate-400 text-sm mb-7 max-w-sm mx-auto">
+            In your inbox or your earbuds — pick your format.
           </p>
-          <SubscribeButtons />
+          <div className="flex flex-col items-center gap-4">
+            <EmailSignup />
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-slate-600">or listen on</span>
+              <SubscribeButtons compact />
+            </div>
+          </div>
         </div>
       </section>
     </>
