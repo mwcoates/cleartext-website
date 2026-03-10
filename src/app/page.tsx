@@ -54,6 +54,14 @@ export default async function Home() {
             </div>
           </div>
 
+          {/* Email signup — above radar */}
+          <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900/40 px-4 py-3">
+            <p className="text-slate-400 text-sm flex-shrink-0">
+              Get the daily briefing in your inbox →
+            </p>
+            <EmailSignup />
+          </div>
+
           {/* Radar iframe */}
           <div
             className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950"
@@ -66,21 +74,17 @@ export default async function Home() {
             />
           </div>
 
-          {/* Below-map: email signup + mobile full-screen link */}
-          <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <p className="text-slate-300 text-sm font-medium mb-0.5">Get the briefing in your inbox</p>
-              <p className="text-slate-500 text-xs">Each dot is a story. Get the full analysis every morning.</p>
-            </div>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-              <EmailSignup />
-              <Link
-                href="/radar"
-                className="text-xs text-slate-500 hover:text-white transition-colors sm:hidden"
-              >
-                Full screen →
-              </Link>
-            </div>
+          {/* Below-map caption + mobile full-screen link */}
+          <div className="mt-3 flex items-center justify-between">
+            <p className="text-slate-600 text-xs">
+              Each dot is a story covered in the last 30 days.
+            </p>
+            <Link
+              href="/radar"
+              className="text-xs text-slate-500 hover:text-white transition-colors sm:hidden"
+            >
+              Full screen →
+            </Link>
           </div>
         </div>
       </section>
