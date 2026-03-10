@@ -66,20 +66,20 @@ export default async function Home() {
             />
           </div>
 
-          {/* Below-map caption + mobile CTA */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-3">
-            <p className="text-slate-500 text-xs leading-relaxed max-w-md">
-              Each dot is a story we&apos;ve covered in the last 30 days.{" "}
-              <span className="text-slate-400">Get the full briefing in your ears every morning.</span>
-            </p>
-            <div className="flex items-center gap-3 flex-shrink-0 sm:hidden">
+          {/* Below-map: email signup + mobile full-screen link */}
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <p className="text-slate-300 text-sm font-medium mb-0.5">Get the briefing in your inbox</p>
+              <p className="text-slate-500 text-xs">Each dot is a story. Get the full analysis every morning.</p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <EmailSignup />
               <Link
                 href="/radar"
-                className="text-xs text-slate-400 hover:text-white transition-colors"
+                className="text-xs text-slate-500 hover:text-white transition-colors sm:hidden"
               >
                 Full screen →
               </Link>
-              <SubscribeButtons compact />
             </div>
           </div>
         </div>
@@ -113,23 +113,6 @@ export default async function Home() {
             Synthesized from 16 leading security publications daily
           </p>
           <SubscribeButtons />
-        </div>
-      </section>
-
-      {/* ── Email Signup ── */}
-      <section className="border-b border-slate-800">
-        <div className="max-w-5xl mx-auto px-6 py-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div>
-              <h2 className="text-lg font-semibold text-white mb-1">
-                Get the briefing in your inbox
-              </h2>
-              <p className="text-slate-400 text-sm">
-                The daily Cleartext briefing — stories, CISO angles, and links — delivered every morning.
-              </p>
-            </div>
-            <EmailSignup />
-          </div>
         </div>
       </section>
 
