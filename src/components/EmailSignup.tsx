@@ -4,7 +4,11 @@ import { useState } from "react";
 
 type State = "idle" | "loading" | "success" | "error";
 
-export default function EmailSignup() {
+interface Props {
+  compact?: boolean; // smaller inline variant for secondary contexts
+}
+
+export default function EmailSignup({ compact = false }: Props) {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<State>("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -42,6 +46,29 @@ export default function EmailSignup() {
         </svg>
         You&apos;re subscribed — first briefing lands tomorrow morning.
       </div>
+    );
+  }
+
+  if (compact) {
+    return (
+      <form onSubmit={handleSubmit} className="flex gap-2">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="your@email.com"
+          required
+          disabled={state === "loading"}
+          className="w-44 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-slate-500 disabled:opacity-50 transition-colors"
+        />
+        <button
+          type="submit"
+          disabled={state === "loading"}
+          className="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-medium transition-all disabled:opacity-50 flex-shrink-0"
+        >
+          {state === "loading" ? "…" : "Subscribe"}
+        </button>
+      </form>
     );
   }
 

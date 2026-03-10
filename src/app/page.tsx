@@ -42,13 +42,13 @@ export default async function Home() {
                 synthesized from 16 leading publications every morning.
               </p>
 
-              {/* Primary CTA: email */}
-              <EmailSignup />
+              {/* Primary CTA: podcast apps */}
+              <SubscribeButtons />
 
-              {/* Secondary: podcast apps — muted so email stays the hero CTA */}
-              <div className="flex items-center gap-3 mt-3 flex-wrap">
-                <span className="text-xs text-slate-600">or listen on</span>
-                <SubscribeButtons muted />
+              {/* Secondary: email */}
+              <div className="flex items-center gap-3 mt-4 flex-wrap">
+                <span className="text-xs text-slate-600">or get it in your inbox</span>
+                <EmailSignup compact />
               </div>
             </div>
 
@@ -115,13 +115,13 @@ export default async function Home() {
             Never miss a briefing
           </h2>
           <p className="text-slate-400 text-sm mb-7 max-w-sm mx-auto">
-            In your inbox or your earbuds — pick your format.
+            Subscribe on your favorite platform — new episodes every weekday morning.
           </p>
           <div className="flex flex-col items-center gap-4">
-            <EmailSignup />
+            <SubscribeButtons />
             <div className="flex items-center gap-3">
-              <span className="text-xs text-slate-600">or listen on</span>
-              <SubscribeButtons compact />
+              <span className="text-xs text-slate-600">or get it in your inbox</span>
+              <EmailSignup compact />
             </div>
           </div>
         </div>
