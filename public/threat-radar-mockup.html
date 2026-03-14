@@ -166,13 +166,8 @@ body.embedded #c-stories-hdr{display:none!important}
   <div class="sidebar">
     <!-- GLOBAL VIEW -->
     <div id="view-global">
-      <div class="sidebar-hdr"><h3>Activity by Category</h3><div class="sub">Feb 6 – Mar 7, 2026 · 25 stories</div></div>
-      <div class="cat-bars">
-        <div class="cat-row"><div class="cat-lr"><span class="c-apt" style="font-size:11px">APT / Espionage</span><span style="color:#334155;font-size:11px">9</span></div><div class="bar-track"><div class="bar-fill bar-apt" style="width:100%"></div></div></div>
-        <div class="cat-row"><div class="cat-lr"><span class="c-breach" style="font-size:11px">Data Breach</span><span style="color:#334155;font-size:11px">7</span></div><div class="bar-track"><div class="bar-fill bar-breach" style="width:78%"></div></div></div>
-        <div class="cat-row"><div class="cat-lr"><span class="c-macro" style="font-size:11px">Macro / Policy</span><span style="color:#334155;font-size:11px">5</span></div><div class="bar-track"><div class="bar-fill bar-macro" style="width:55%"></div></div></div>
-        <div class="cat-row"><div class="cat-lr"><span class="c-vuln" style="font-size:11px">Vulnerability</span><span style="color:#334155;font-size:11px">4</span></div><div class="bar-track"><div class="bar-fill bar-vuln" style="width:44%"></div></div></div>
-      </div>
+      <div class="sidebar-hdr"><h3>Activity by Category</h3><div class="sub" id="date-range-sub">Loading…</div></div>
+      <div class="cat-bars" id="cat-bars"></div>
       <div class="sidebar-hdr" style="padding-top:12px"><h3>Recent Stories</h3></div>
       <div class="story-scroll" id="global-feed"></div>
     </div>
@@ -479,50 +474,62 @@ const COUNTRY_DATA = {
   "630":{name:"Puerto Rico",flag:"🇵🇷",region:"Caribbean",pop:"3.2M",gdp:"$105B",internet:"77%",sectors:["Pharma","Manufacturing","Tourism"]},
 };
 
-// ── Story data ────────────────────────────────────────────────────────────────
-const STORIES = [
-  {id:1,  cat:"apt",   iso:"156", title:"China-Linked Hackers Use Malware Trio for Telecom Espionage",              source:"BankInfoSecurity",   date:"Mar 7",  score:9, lat:35.8, lng:104.2},
-  {id:2,  cat:"apt",   iso:"643", title:"GRU Sandworm Deploys New OT Malware Against Energy Sector",                source:"Wired",              date:"Mar 6",  score:9, lat:55.7, lng:37.6},
-  {id:3,  cat:"breach",iso:"840", title:"Change Healthcare Confirms 190M Patient Records Exposed",                  source:"Bleeping Computer",  date:"Mar 6",  score:8, lat:37.1, lng:-95.7},
-  {id:4,  cat:"apt",   iso:"364", title:"MuddyWater Targets U.S. Networks With New Dindoor Backdoor",               source:"The Hacker News",    date:"Mar 6",  score:8, lat:32.4, lng:53.7},
-  {id:5,  cat:"macro", iso:"840", title:"Tech Giants Rally for Anthropic in Pentagon AI Feud",                      source:"BankInfoSecurity",   date:"Mar 6",  score:7, lat:38.9, lng:-77.0},
-  {id:6,  cat:"breach",iso:"826", title:"Tycoon 2FA Phishing Platform Busted by Europol Operation",                 source:"Dark Reading",       date:"Mar 5",  score:8, lat:51.5, lng:-0.1},
-  {id:7,  cat:"vuln",  iso:"840", title:"CISA Adds Three Actively Exploited Ivanti CVEs to KEV Catalog",            source:"SANS ISC",           date:"Mar 5",  score:8, lat:37.1, lng:-95.7},
-  {id:8,  cat:"apt",   iso:"408", title:"Lazarus Group Pivots to Supply Chain Attacks on Financial Sector",          source:"Krebs on Security",  date:"Mar 4",  score:9, lat:40.3, lng:127.5},
-  {id:9,  cat:"gov",   iso:"056", title:"EU Cyber Resilience Act Enters Enforcement Phase",                          source:"Infosecurity",       date:"Mar 4",  score:7, lat:50.8, lng:4.4},
-  {id:10, cat:"breach",iso:"036", title:"Medibank Breach Settlement — $250M to Affected Patients",                   source:"Dark Reading",       date:"Mar 3",  score:7, lat:-25.3,lng:133.8},
-  {id:11, cat:"apt",   iso:"643", title:"Midnight Blizzard Expands from Government to NGO Targets",                  source:"Microsoft Security", date:"Mar 3",  score:8, lat:55.7, lng:37.6},
-  {id:12, cat:"vuln",  iso:"840", title:"Critical Cisco IOS XE Flaw Exploited in the Wild — Patch Now",             source:"Bleeping Computer",  date:"Mar 2",  score:9, lat:37.1, lng:-95.7},
-  {id:13, cat:"macro", iso:"840", title:"DOGE System Access Raises Federal Cybersecurity Alarm",                    source:"The Register",       date:"Mar 2",  score:8, lat:38.9, lng:-77.0},
-  {id:14, cat:"breach",iso:"356", title:"BSNL Telecom Data Leak Exposes 278M Customer Records",                     source:"Dark Reading",       date:"Feb 28", score:7, lat:20.6, lng:78.9},
-  {id:15, cat:"apt",   iso:"156", title:"Salt Typhoon Persists in U.S. Telecom Networks Despite Remediation",       source:"WSJ",                date:"Feb 27", score:9, lat:35.8, lng:104.2},
-  {id:16, cat:"gov",   iso:"840", title:"SEC Cyber Disclosure Rules Drive Board-Level Security Reporting",           source:"Infosecurity",       date:"Feb 26", score:7, lat:38.9, lng:-77.0},
-  {id:17, cat:"breach",iso:"276", title:"Rheinmetall Hit by BlackCat Ransomware — Military Data at Risk",            source:"Wired",              date:"Feb 24", score:8, lat:51.2, lng:10.4},
-  {id:18, cat:"apt",   iso:"364", title:"Iran-Backed Hackers Target Israeli Defense Contractors",                   source:"The Hacker News",    date:"Feb 22", score:8, lat:32.4, lng:53.7},
-  {id:19, cat:"apt",   iso:"156", title:"Volt Typhoon Pre-Positions in U.S. Critical Infrastructure",               source:"CISA Advisory",      date:"Feb 20", score:9, lat:35.8, lng:104.2},
-  {id:20, cat:"macro", iso:"840", title:"AI-Generated Phishing Surges 40% — Defenders Struggle to Keep Up",        source:"Dark Reading",       date:"Feb 20", score:8, lat:37.1, lng:-95.7},
-  {id:21, cat:"breach",iso:"643", title:"REvil Successor Claims Attack on Major U.S. Healthcare Provider",          source:"Bleeping Computer",  date:"Feb 18", score:8, lat:55.7, lng:37.6},
-  {id:22, cat:"apt",   iso:"408", title:"DPRK Hackers Steal $1.5B in Crypto — Largest Single Theft on Record",     source:"Chainalysis",        date:"Feb 15", score:9, lat:40.3, lng:127.5},
-  {id:23, cat:"vuln",  iso:"840", title:"Microsoft Patch Tuesday Fixes 6 Actively Exploited Zero-Days",             source:"SANS ISC",           date:"Feb 12", score:8, lat:37.1, lng:-95.7},
-  {id:24, cat:"gov",   iso:"840", title:"NIST CSF 2.0 Governance Function Reshapes CISO Accountability",            source:"NIST",               date:"Feb 10", score:7, lat:38.9, lng:-77.0},
-  {id:25, cat:"breach",iso:"036", title:"Optus Faces $1.5B Lawsuit Over 2022 Breach — Class Action Filed",          source:"The Register",       date:"Feb 8",  score:7, lat:-25.3,lng:133.8},
-];
-document.getElementById("story-count").textContent = STORIES.length;
-
+// ── Story data (loaded dynamically from GCS) ─────────────────────────────────
 const CAT_LABEL={apt:"APT",breach:"Breach",vuln:"Vuln",gov:"Governance",macro:"Policy"};
 const CAT_COLOR={apt:"#a78bfa",breach:"#ef4444",vuln:"#f59e0b",gov:"#34d399",macro:"#60a5fa"};
 const cc=c=>CAT_COLOR[c]||"#64748b";
 const cl=c=>CAT_LABEL[c]||c;
 
-// Group stories
-const byIso={};
-STORIES.forEach(s=>{ if(!byIso[s.iso])byIso[s.iso]=[]; byIso[s.iso].push(s); });
-const byLoc={};
-STORIES.forEach(s=>{
-  const k=`${s.lat},${s.lng}`;
-  if(!byLoc[k])byLoc[k]={lat:s.lat,lng:s.lng,iso:s.iso,stories:[]};
-  byLoc[k].stories.push(s);
-});
+let STORIES=[], byIso={}, byLoc={};
+
+function groupStories(){
+  byIso={}; byLoc={};
+  STORIES.forEach(s=>{ if(!byIso[s.iso])byIso[s.iso]=[]; byIso[s.iso].push(s); });
+  STORIES.forEach(s=>{
+    const k=`${s.lat},${s.lng}`;
+    if(!byLoc[k])byLoc[k]={lat:s.lat,lng:s.lng,iso:s.iso,stories:[]};
+    byLoc[k].stories.push(s);
+  });
+}
+
+function renderCategoryBars(){
+  const counts={};
+  STORIES.forEach(s=>{ counts[s.cat]=(counts[s.cat]||0)+1; });
+  const CAT_FULL={apt:"APT / Espionage",breach:"Data Breach",macro:"Macro / Policy",vuln:"Vulnerability",gov:"Governance"};
+  const order=["apt","breach","macro","vuln","gov"];
+  const max=Math.max(...Object.values(counts),1);
+  const el=document.getElementById("cat-bars"); el.innerHTML="";
+  order.filter(c=>counts[c]).forEach(c=>{
+    const pct=Math.round((counts[c]/max)*100);
+    el.innerHTML+=`<div class="cat-row"><div class="cat-lr"><span class="c-${c}" style="font-size:11px">${CAT_FULL[c]||c}</span><span style="color:#334155;font-size:11px">${counts[c]}</span></div><div class="bar-track"><div class="bar-fill bar-${c}" style="width:${pct}%"></div></div></div>`;
+  });
+}
+
+function updateDateRange(){
+  if(!STORIES.length) return;
+  // Stories are sorted newest-first; use first and last
+  const dates=STORIES.map(s=>s.date).filter(Boolean);
+  const newest=dates[0]||"";
+  const oldest=dates[dates.length-1]||"";
+  const label=oldest&&oldest!==newest?`${oldest} – ${newest} · ${STORIES.length} stories`:`${newest} · ${STORIES.length} stories`;
+  document.getElementById("date-range-sub").textContent=label;
+}
+
+async function loadStories(){
+  try{
+    const res=await fetch("https://storage.googleapis.com/cleartext-podcast/radar_data.json",{cache:"no-cache"});
+    if(res.ok) STORIES=await res.json();
+  }catch(e){ console.warn("Could not load radar data",e); }
+  groupStories();
+  renderCategoryBars();
+  updateDateRange();
+  document.getElementById("story-count").textContent=STORIES.length;
+  renderGlobalFeed();
+  if(typeof drawDots==="function") drawDots();
+}
+
+// Kick off data load (map may not be ready yet; drawDots is called again after map init)
+loadStories();
 
 // ── Global feed ────────────────────────────────────────────────────────────────
 function renderGlobalFeed(){
@@ -657,10 +664,11 @@ const path=d3.geoPath().projection(proj);
 const grat=d3.geoGraticule().step([30,30]);
 g.append("path").datum(grat()).attr("class","grid-line").attr("fill","none").attr("d",path);
 
+let countries=null;
 fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
   .then(r=>r.json())
   .then(world=>{
-    const countries=topojson.feature(world,world.objects.countries);
+    countries=topojson.feature(world,world.objects.countries);
     g.selectAll(".country").data(countries.features).enter().append("path")
       .attr("class","country").attr("d",path)
       .on("click",(ev,d)=>{ if(d.id==null||isNaN(d.id))return; const iso=String(d.id).padStart(3,"0"); zoomToFeature(d,iso); })
@@ -684,8 +692,21 @@ fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
       .on("mouseleave",()=>document.getElementById("tooltip").classList.remove("show"));
 
     // Pulses
-    const pg=svg.append("g");
-    Object.values(byLoc).forEach(loc=>{
+    drawDots();
+
+    // Auto-zoom if deep-linked from embedded CTA (e.g. /radar?country=840)
+    const autoCountry=new URLSearchParams(window.location.search).get('country');
+    if(autoCountry){
+      const feat=countries.features.find(f=>String(f.id).padStart(3,"0")===autoCountry);
+      zoomToFeature(feat||null,autoCountry);
+    }
+  });
+
+function drawDots(){
+  if(!proj||!Object.keys(byLoc).length) return;
+  svg.selectAll(".pulse-layer").remove();
+  const pg=svg.append("g").attr("class","pulse-layer");
+  Object.values(byLoc).forEach(loc=>{
       const [x,y]=proj([loc.lng,loc.lat]);
       if(!x||!y) return;
       const dom=loc.stories.reduce((a,b)=>a.score>b.score?a:b);
@@ -711,14 +732,7 @@ fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
       })
       .on("mouseleave",()=>document.getElementById("tooltip").classList.remove("show"));
     });
-
-    // Auto-zoom if deep-linked from embedded CTA (e.g. /radar?country=840)
-    const autoCountry=new URLSearchParams(window.location.search).get('country');
-    if(autoCountry){
-      const feat=countries.features.find(f=>String(f.id).padStart(3,"0")===autoCountry);
-      zoomToFeature(feat||null,autoCountry);
-    }
-  });
+}
 
 function zoomToFeature(feature,iso,fx,fy){
   document.getElementById("tooltip").classList.remove("show");
@@ -755,6 +769,7 @@ function zoomOut(){
   document.getElementById("zoom-out-btn").style.display="none";
   document.getElementById("map-title").textContent="Global Threat Coverage";
   document.getElementById("map-subtitle").textContent=`Click any country to explore · ${STORIES.length} stories tracked`;
+  document.getElementById("story-count").textContent=STORIES.length;
 }
 document.getElementById("zoom-out-btn").addEventListener("click",()=>{ showGlobalView(); zoomOut(); });
 
