@@ -517,7 +517,7 @@ function updateDateRange(){
 
 async function loadStories(){
   try{
-    const res=await fetch("https://storage.googleapis.com/cleartext-podcast/radar_data.json",{cache:"no-cache"});
+    const res=await fetch("/api/radar-data",{cache:"no-cache"});
     if(res.ok) STORIES=await res.json();
   }catch(e){ console.warn("Could not load radar data",e); }
   groupStories();
