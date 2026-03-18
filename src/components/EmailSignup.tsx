@@ -28,6 +28,10 @@ export default function EmailSignup({ compact = false }: Props) {
       const data = await res.json();
       if (data.success) {
         setState("success");
+        // LinkedIn conversion tracking
+        if (typeof window !== "undefined" && (window as any).lintrk) {
+          (window as any).lintrk('track', { conversion_id: 24824540 });
+        }
       } else {
         setErrorMsg(data.error ?? "Something went wrong. Please try again.");
         setState("error");
