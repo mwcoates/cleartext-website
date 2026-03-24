@@ -2,17 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --background: #020617;
-  --foreground: #f8fafc;
+  --background: #080808;
+  --foreground: #e8e8e8;
+  --accent: #00ff87;
+  --border: #1a1a1a;
+  --card: #0f0f0f;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -21,42 +24,42 @@ body {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #0a0a0a;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #2a2a2a;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #3a3a3a;
 }
 
-/* Show notes prose overrides — make it look good on dark bg */
+/* Show notes prose overrides */
 .show-notes-content {
-  --tw-prose-body: #cbd5e1;
-  --tw-prose-headings: #f1f5f9;
-  --tw-prose-lead: #94a3b8;
-  --tw-prose-links: #22d3ee;
-  --tw-prose-bold: #f1f5f9;
-  --tw-prose-counters: #64748b;
-  --tw-prose-bullets: #475569;
-  --tw-prose-hr: #1e293b;
-  --tw-prose-quotes: #94a3b8;
-  --tw-prose-quote-borders: #334155;
-  --tw-prose-captions: #64748b;
-  --tw-prose-code: #22d3ee;
-  --tw-prose-pre-code: #e2e8f0;
-  --tw-prose-pre-bg: #0f172a;
-  --tw-prose-th-borders: #334155;
-  --tw-prose-td-borders: #1e293b;
+  --tw-prose-body: #b0b0b0;
+  --tw-prose-headings: #e8e8e8;
+  --tw-prose-lead: #888;
+  --tw-prose-links: #00ff87;
+  --tw-prose-bold: #e8e8e8;
+  --tw-prose-counters: #555;
+  --tw-prose-bullets: #444;
+  --tw-prose-hr: #1a1a1a;
+  --tw-prose-quotes: #888;
+  --tw-prose-quote-borders: #2a2a2a;
+  --tw-prose-captions: #555;
+  --tw-prose-code: #00ff87;
+  --tw-prose-pre-code: #e8e8e8;
+  --tw-prose-pre-bg: #0f0f0f;
+  --tw-prose-th-borders: #2a2a2a;
+  --tw-prose-td-borders: #1a1a1a;
 }
 
 .show-notes-content h1 {
-  display: none; /* title is shown separately above the player */
+  display: none;
 }
 
 .show-notes-content h2 {
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid #1a1a1a;
   padding-bottom: 0.5rem;
   margin-top: 2rem;
 }
@@ -64,10 +67,9 @@ body {
 .show-notes-content h4 {
   padding-top: 1.25rem;
   margin-top: 1.25rem;
-  border-top: 1px solid #1e293b;
+  border-top: 1px solid #1a1a1a;
 }
 
-/* First story under each category header: no top border */
 .show-notes-content h3 + h4 {
   border-top: none;
   margin-top: 0.5rem;
@@ -75,8 +77,8 @@ body {
 }
 
 .show-notes-content blockquote {
-  border-left-color: #22d3ee;
-  background: #0f172a;
+  border-left-color: #00ff87;
+  background: #0f0f0f;
   border-radius: 0 0.5rem 0.5rem 0;
   padding: 0.75rem 1rem;
 }
@@ -89,7 +91,6 @@ body {
   text-decoration: underline;
 }
 
-/* Audio player dark styling */
 audio::-webkit-media-controls-panel {
-  background-color: #1e293b;
+  background-color: #0f0f0f;
 }

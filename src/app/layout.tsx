@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     default: "Cleartext — Daily Cybersecurity Briefing",
   },
   icons: {
-    icon: "/logo.png",
+    icon: "/favicon.svg",
     apple: "/logo.png",
   },
   description:
@@ -58,7 +58,7 @@ export default function RootLayout({
           gtag('config', 'G-1KEC10Z0WH');
         `}</Script>
       </head>
-      <body className="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+      <body className="bg-[#080808] text-[#e8e8e8] min-h-screen flex flex-col">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

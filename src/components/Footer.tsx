@@ -2,43 +2,40 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-800 bg-slate-950 mt-20">
+    <footer className="border-t border-[#1a1a1a] bg-[#080808] mt-20">
       <div className="max-w-5xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
-          <p className="text-white font-semibold">Cleartext</p>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-[#00ff87] font-semibold">cleartext_</p>
+          <p className="text-[#555] text-sm mt-1">
             Daily cybersecurity briefing for security leaders.
           </p>
         </div>
 
-        <div className="flex items-center gap-8 text-sm text-slate-500">
-          <Link href="/" className="hover:text-slate-300 transition-colors">
-            Episodes
+        <div className="flex items-center gap-8 text-sm text-[#555]">
+          <Link href="/" className="hover:text-[#e8e8e8] transition-colors">
+            episodes
           </Link>
-          <Link
-            href="/about"
-            className="hover:text-slate-300 transition-colors"
-          >
-            About
+          <Link href="/about" className="hover:text-[#e8e8e8] transition-colors">
+            about
           </Link>
           <a
             href="https://storage.googleapis.com/cleartext-podcast/feed.xml"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-slate-300 transition-colors"
+            className="hover:text-[#e8e8e8] transition-colors"
           >
-            RSS Feed
+            rss
           </a>
           <a
             href="mailto:podcast@sevenhillventures.com"
-            className="hover:text-slate-300 transition-colors"
+            className="hover:text-[#e8e8e8] transition-colors"
           >
-            Contact
+            contact
           </a>
         </div>
       </div>
 
-      <div className="border-t border-slate-800/50 py-4 text-center text-slate-600 text-xs">
+      <div className="border-t border-[#1a1a1a] py-4 text-center text-[#444] text-xs">
         © {new Date().getFullYear()} Cleartext. New episodes Monday–Saturday.
       </div>
     </footer>

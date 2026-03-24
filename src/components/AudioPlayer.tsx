@@ -16,15 +16,15 @@ export default function AudioPlayer({
   episodeTitle,
 }: Props) {
   return (
-    <div className="bg-slate-900 border border-slate-700 rounded-2xl p-5">
+    <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-2xl p-5">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
-          <span className="text-sm font-medium text-slate-300">
+          <span className="w-2 h-2 rounded-full bg-[#00ff87] animate-pulse" />
+          <span className="text-sm font-medium text-[#888]">
             {episodeTitle}
           </span>
         </div>
-        <div className="flex items-center gap-3 text-xs text-slate-500 font-mono">
+        <div className="flex items-center gap-3 text-xs text-[#555] font-mono">
           <span>{formatDuration(durationSeconds)}</span>
           <span>·</span>
           <span>{formatFileSize(fileSizeBytes)}</span>
@@ -45,12 +45,12 @@ export default function AudioPlayer({
         <a
           href={audioUrl}
           download
-          className="text-xs text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-1"
+          className="text-xs text-[#555] hover:text-[#e8e8e8] transition-colors flex items-center gap-1"
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
             <path d="M5 20h14v-2H5v2zm7-18L5.33 9h3.84v4h5.66V9h3.84L12 2z" />
           </svg>
-          Download MP3
+          download mp3
         </a>
       </div>
     </div>

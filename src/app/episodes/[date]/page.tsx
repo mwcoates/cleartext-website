@@ -66,9 +66,9 @@ export default async function EpisodePage({ params }: Props) {
       <nav className="mb-8">
         <Link
           href="/"
-          className="text-slate-500 hover:text-slate-300 text-sm transition-colors flex items-center gap-1"
+          className="text-[#555] hover:text-[#e8e8e8] text-sm transition-colors flex items-center gap-1"
         >
-          ← All Episodes
+          ← all episodes
         </Link>
       </nav>
 
@@ -76,21 +76,21 @@ export default async function EpisodePage({ params }: Props) {
       <header className="mb-8">
         <div className="flex flex-wrap items-center gap-2 mb-3">
           {isWeekly ? (
-            <span className="text-xs font-semibold uppercase tracking-widest text-purple-400 bg-purple-400/10 px-3 py-1 rounded-full">
-              Week in Review
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#00ff87]/70 bg-[#00ff87]/5 border border-[#00ff87]/20 px-3 py-1 rounded-full">
+              week in review
             </span>
           ) : (
-            <span className="text-xs font-semibold uppercase tracking-widest text-cyan-400 bg-cyan-400/10 px-3 py-1 rounded-full">
-              Daily Briefing
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#00ff87] bg-[#00ff87]/10 px-3 py-1 rounded-full">
+              daily briefing
             </span>
           )}
         </div>
 
-        <h1 className="text-3xl font-bold text-white leading-tight mb-3">
+        <h1 className="text-3xl font-bold text-[#e8e8e8] leading-tight mb-3">
           {episode.title}
         </h1>
 
-        <p className="text-slate-500 text-sm">
+        <p className="text-[#555] text-sm">
           {formatDate(episode.date)}
           <span className="mx-2">·</span>
           {formatDuration(episode.duration_seconds)}
@@ -108,8 +108,8 @@ export default async function EpisodePage({ params }: Props) {
       </div>
 
       {/* Subscribe CTA */}
-      <div className="mb-10 p-4 border border-slate-800 rounded-xl bg-slate-900/30 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-slate-400 text-sm">
+      <div className="mb-10 p-4 border border-[#1a1a1a] rounded-xl bg-[#0f0f0f] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p className="text-[#666] text-sm">
           Enjoy the show? Subscribe to never miss an episode.
         </p>
         <SubscribeButtons compact />
@@ -118,8 +118,8 @@ export default async function EpisodePage({ params }: Props) {
       {/* Show Notes */}
       {episode.show_notes_html && (
         <section>
-          <h2 className="text-slate-500 text-xs font-semibold uppercase tracking-widest mb-6">
-            Show Notes
+          <h2 className="text-[#444] text-xs font-semibold uppercase tracking-widest mb-6">
+            show notes
           </h2>
           <div
             className="prose prose-invert max-w-none show-notes-content"
@@ -129,17 +129,17 @@ export default async function EpisodePage({ params }: Props) {
       )}
 
       {/* Episode navigation */}
-      <nav className="mt-16 pt-8 border-t border-slate-800 grid grid-cols-2 gap-4">
+      <nav className="mt-16 pt-8 border-t border-[#1a1a1a] grid grid-cols-2 gap-4">
         <div>
           {prevEpisode && (
             <Link
               href={`/episodes/${getEpisodeSlug(prevEpisode)}`}
               className="group block"
             >
-              <span className="text-xs text-slate-600 uppercase tracking-wider">
-                ← Previous
+              <span className="text-xs text-[#444] uppercase tracking-wider">
+                ← previous
               </span>
-              <p className="text-slate-400 text-sm mt-1 group-hover:text-white transition-colors line-clamp-2">
+              <p className="text-[#666] text-sm mt-1 group-hover:text-[#e8e8e8] transition-colors line-clamp-2">
                 {prevEpisode.title}
               </p>
             </Link>
@@ -151,10 +151,10 @@ export default async function EpisodePage({ params }: Props) {
               href={`/episodes/${getEpisodeSlug(nextEpisode)}`}
               className="group block"
             >
-              <span className="text-xs text-slate-600 uppercase tracking-wider">
-                Next →
+              <span className="text-xs text-[#444] uppercase tracking-wider">
+                next →
               </span>
-              <p className="text-slate-400 text-sm mt-1 group-hover:text-white transition-colors line-clamp-2">
+              <p className="text-[#666] text-sm mt-1 group-hover:text-[#e8e8e8] transition-colors line-clamp-2">
                 {nextEpisode.title}
               </p>
             </Link>
