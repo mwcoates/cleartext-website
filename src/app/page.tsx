@@ -72,12 +72,12 @@ export default async function Home() {
 
           {/* Below-map caption */}
           <div className="mt-3 flex items-center justify-between">
-            <p className="text-[#444] text-xs">
+            <p className="text-[#888] text-xs">
               Each dot is a story tracked in the last 30 days · Mon–Fri + Week in Review Saturday
             </p>
             <Link
               href="/radar"
-              className="text-xs text-[#555] hover:text-[#e8e8e8] transition-colors"
+              className="text-xs text-[#999] hover:text-[#e8e8e8] transition-colors"
             >
               Full screen →
             </Link>

@@ -39,7 +39,7 @@ export default function EpisodeCard({ episode, featured = false }: Props) {
         <h2 className="text-2xl font-bold text-[#e8e8e8] mb-2 leading-tight">
           {episode.title}
         </h2>
-        <p className="text-[#555] text-sm mb-5">
+        <p className="text-[#999] text-sm mb-5">
           {formatDate(episode.date)} &nbsp;·&nbsp;{" "}
           {formatDuration(episode.duration_seconds)}
         </p>
@@ -47,7 +47,7 @@ export default function EpisodeCard({ episode, featured = false }: Props) {
         {bullets.length > 0 && (
           <ul className="space-y-1.5 mb-6">
             {bullets.map((b, i) => (
-              <li key={i} className="flex items-start gap-2 text-[#888] text-sm">
+              <li key={i} className="flex items-start gap-2 text-[#bbb] text-sm">
                 <span className="text-[#00ff87] mt-0.5 shrink-0">▸</span>
                 {b}
               </li>
@@ -65,7 +65,7 @@ export default function EpisodeCard({ episode, featured = false }: Props) {
 
           <a
             href={episode.audio_url}
-            className="text-[#555] hover:text-[#e8e8e8] text-sm transition-colors"
+            className="text-[#888] hover:text-[#e8e8e8] text-sm transition-colors"
           >
             download mp3 ↓
           </a>
@@ -86,7 +86,7 @@ export default function EpisodeCard({ episode, featured = false }: Props) {
                   week in review ·{" "}
                 </span>
               )}
-              <span className="text-[#777] text-xs">
+              <span className="text-[#999] text-xs">
                 {formatDate(episode.date)}
               </span>
             </div>
@@ -94,14 +94,14 @@ export default function EpisodeCard({ episode, featured = false }: Props) {
               {episode.title}
             </h3>
             {bullets.length > 0 && (
-              <p className="text-[#888] text-sm mt-1.5 line-clamp-2">
+              <p className="text-[#aaa] text-sm mt-1.5 line-clamp-2">
                 {bullets.join(" · ")}
               </p>
             )}
           </div>
 
           <div className="flex flex-col items-end gap-2 shrink-0">
-            <span className="text-[#666] text-xs font-mono">
+            <span className="text-[#999] text-xs font-mono">
               {formatDuration(episode.duration_seconds)}
             </span>
             <span className="text-[#00ff87] text-sm group-hover:translate-x-1 transition-transform">
