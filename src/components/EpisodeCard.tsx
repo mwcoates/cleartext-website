@@ -82,11 +82,11 @@ export default function EpisodeCard({ episode, featured = false }: Props) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               {isWeekly && (
-                <span className="text-xs text-[#00ff87]/70 font-medium">
+                <span className="text-xs text-[#00ff87]/80 font-medium">
                   week in review ·{" "}
                 </span>
               )}
-              <span className="text-[#555] text-xs">
+              <span className="text-[#777] text-xs">
                 {formatDate(episode.date)}
               </span>
             </div>
@@ -94,14 +94,14 @@ export default function EpisodeCard({ episode, featured = false }: Props) {
               {episode.title}
             </h3>
             {bullets.length > 0 && (
-              <p className="text-[#555] text-sm mt-1.5 line-clamp-2">
+              <p className="text-[#888] text-sm mt-1.5 line-clamp-2">
                 {bullets.join(" · ")}
               </p>
             )}
           </div>
 
           <div className="flex flex-col items-end gap-2 shrink-0">
-            <span className="text-[#444] text-xs font-mono">
+            <span className="text-[#666] text-xs font-mono">
               {formatDuration(episode.duration_seconds)}
             </span>
             <span className="text-[#00ff87] text-sm group-hover:translate-x-1 transition-transform">
