@@ -9,10 +9,12 @@ import {
 interface Props {
   episode: Episode;
   featured?: boolean;
+  podcast?: "cyber" | "ai";
 }
 
-export default function EpisodeCard({ episode, featured = false }: Props) {
+export default function EpisodeCard({ episode, featured = false, podcast = "cyber" }: Props) {
   const slug = getEpisodeSlug(episode);
+  const episodePath = podcast === "ai" ? `/ai/episodes/${slug}` : `/episodes/${slug}`;
   const isWeekly = episode.title.toLowerCase().includes("week in review");
 
   // Extract bullet points from description (lines starting with •)
@@ -57,7 +59,7 @@ export default function EpisodeCard({ episode, featured = false }: Props) {
 
         <div className="flex flex-wrap items-center gap-4 mt-6">
           <Link
-            href={`/episodes/${slug}`}
+            href={episodePath}
             className="inline-flex items-center gap-2 bg-[#00ff87] hover:bg-[#00ff87]/90 text-[#080808] font-semibold px-5 py-2.5 rounded-xl transition-all hover:scale-105 text-sm"
           >
             <PlayIcon /> listen &amp; read show notes
@@ -77,7 +79,7 @@ export default function EpisodeCard({ episode, featured = false }: Props) {
   // Compact list card
   return (
     <article className="border border-[#1a1a1a] bg-[#0f0f0f]/60 hover:bg-[#0f0f0f] hover:border-[#2a2a2a] rounded-xl p-5 transition-all group">
-      <Link href={`/episodes/${slug}`} className="block">
+      <Link href={episodePath} className="block">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">

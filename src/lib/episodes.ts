@@ -29,6 +29,22 @@ export async function getEpisodes(): Promise<Episode[]> {
   );
 }
 
+/** Fetch AI Revolution episodes from GCS, sorted newest first. */
+export async function getAiEpisodes(): Promise<Episode[]> {
+  try {
+    const res = await fetch(`${GCS_BASE}/ai/episodes.json`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    const episodes: Episode[] = await res.json();
+    return episodes.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+  } catch {
+    return [];
+  }
+}
+
 /** Extract YYYY-MM-DD slug from an episode. */
 export function getEpisodeSlug(episode: Episode): string {
   return episode.date.split("T")[0];
