@@ -6,9 +6,10 @@ type State = "idle" | "loading" | "success" | "error";
 
 interface Props {
   compact?: boolean;
+  podcast?: "cyber" | "ai";
 }
 
-export default function EmailSignup({ compact = false }: Props) {
+export default function EmailSignup({ compact = false, podcast = "cyber" }: Props) {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<State>("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -23,7 +24,7 @@ export default function EmailSignup({ compact = false }: Props) {
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: email.trim(), podcast }),
       });
       const data = await res.json();
       if (data.success) {

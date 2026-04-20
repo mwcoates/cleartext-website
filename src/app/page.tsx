@@ -48,13 +48,20 @@ export default async function Home({
               </Link>
               <Link
                 href="/?feed=ai"
-                className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${
+                className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 ${
                   !isCyber
                     ? "bg-[#00ff87] text-[#080808]"
                     : "text-[#666] hover:text-[#aaa]"
                 }`}
               >
                 AI
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
+                  !isCyber
+                    ? "bg-[#080808]/20 text-[#080808]/60"
+                    : "bg-[#00ff87]/10 text-[#00ff87]/60 border border-[#00ff87]/20"
+                }`}>
+                  Beta
+                </span>
               </Link>
             </div>
           </div>
@@ -71,7 +78,7 @@ export default async function Home({
                   </span>
                 </div>
                 <h1 className="text-4xl sm:text-5xl font-bold text-[#e8e8e8] leading-tight mb-3">
-                  cleartext<span className="text-[#00ff87] animate-pulse">_</span>
+                  cleartext<span className="text-[#00ff87]">:Cyber</span><span className="text-[#00ff87] animate-pulse">_</span>
                 </h1>
                 <p className="text-base sm:text-lg text-[#666] mb-8 leading-relaxed max-w-lg mx-auto">
                   Daily cybersecurity briefing for CISOs and security leaders —
@@ -87,7 +94,7 @@ export default async function Home({
                   </span>
                 </div>
                 <h1 className="text-4xl sm:text-5xl font-bold text-[#e8e8e8] leading-tight mb-3">
-                  ai revolution<span className="text-[#00ff87] animate-pulse">_</span>
+                  cleartext<span className="text-[#00ff87]">:AI</span><span className="text-[#00ff87] animate-pulse">_</span>
                 </h1>
                 <p className="text-base sm:text-lg text-[#666] mb-8 leading-relaxed max-w-lg mx-auto">
                   Daily briefing on AI advancements — frontier models, research breakthroughs,
@@ -105,7 +112,7 @@ export default async function Home({
             </div>
 
             <div className="flex justify-center">
-              <EmailSignup />
+              <EmailSignup podcast={feed} />
             </div>
 
           </div>
@@ -183,7 +190,7 @@ export default async function Home({
             <div className="flex-1 h-px bg-[#1a1a1a]" />
           </div>
           <div className="flex justify-center">
-            <EmailSignup />
+            <EmailSignup podcast={feed} />
           </div>
         </div>
       </section>

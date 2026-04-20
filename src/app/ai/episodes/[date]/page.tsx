@@ -8,6 +8,7 @@ import {
 } from "@/lib/episodes";
 import AudioPlayer from "@/components/AudioPlayer";
 import SubscribeButtons from "@/components/SubscribeButtons";
+import EmailSignup from "@/components/EmailSignup";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
@@ -97,11 +98,15 @@ export default async function AiEpisodePage({ params }: Props) {
       </div>
 
       {/* Subscribe CTA */}
-      <div className="mb-10 p-4 border border-[#1a1a1a] rounded-xl bg-[#0f0f0f]/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="mb-10 p-4 border border-[#1a1a1a] rounded-xl bg-[#0f0f0f]/50 flex flex-col gap-3">
         <p className="text-[#666] text-sm">
           Enjoy the show? Subscribe to never miss an episode.
         </p>
-        <SubscribeButtons compact />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <SubscribeButtons compact />
+          <span className="text-[#333] text-xs hidden sm:block">or</span>
+          <EmailSignup compact podcast="ai" />
+        </div>
       </div>
 
       {/* Show Notes */}
