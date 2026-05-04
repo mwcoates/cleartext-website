@@ -4,8 +4,7 @@ const CYBER_SPOTIFY_URL = "https://open.spotify.com/show/5aYVJheLNNZzkN3WnPXQSu"
 const CYBER_APPLE_URL = "https://podcasts.apple.com/us/podcast/cleartext/id1881767338";
 
 const AI_SPOTIFY_URL = "https://open.spotify.com/show/4KNQPZmVIkQOp7tRCnVGuf";
-// AI Apple Podcasts URL — add once submitted
-const AI_APPLE_URL: string | null = null;
+const AI_APPLE_URL = "https://podcasts.apple.com/us/podcast/ai-revolution/id1896277216";
 
 interface Props {
   compact?: boolean;
