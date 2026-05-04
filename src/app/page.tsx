@@ -103,7 +103,7 @@ export default async function Home({
               </>
             )}
 
-            <SubscribeButtons />
+            <SubscribeButtons podcast={feed} />
 
             <div className="flex items-center gap-4 max-w-xs mx-auto my-5">
               <div className="flex-1 h-px bg-[#1a1a1a]" />
@@ -183,7 +183,7 @@ export default async function Home({
           <p className="text-[#666] text-sm mb-7 max-w-sm mx-auto">
             New episodes every weekday morning — subscribe wherever you listen.
           </p>
-          <SubscribeButtons />
+          <SubscribeButtons podcast={feed} />
           <div className="flex items-center gap-4 max-w-xs mx-auto my-5">
             <div className="flex-1 h-px bg-[#1a1a1a]" />
             <span className="text-xs text-[#444] whitespace-nowrap">or get it in your inbox</span>

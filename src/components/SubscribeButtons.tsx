@@ -1,25 +1,27 @@
 "use client";
 
-// Update these URLs once your show is live on each platform
-const SPOTIFY_URL =
-  "https://open.spotify.com/show/5aYVJheLNNZzkN3WnPXQSu";
-const APPLE_URL =
-  "https://podcasts.apple.com/us/podcast/cleartext/id1881767338";
-const RSS_URL =
-  "https://storage.googleapis.com/cleartext-podcast/feed.xml";
+const CYBER_SPOTIFY_URL = "https://open.spotify.com/show/5aYVJheLNNZzkN3WnPXQSu";
+const CYBER_APPLE_URL = "https://podcasts.apple.com/us/podcast/cleartext/id1881767338";
+
+const AI_SPOTIFY_URL = "https://open.spotify.com/show/4KNQPZmVIkQOp7tRCnVGuf";
+// AI Apple Podcasts URL — add once submitted
+const AI_APPLE_URL: string | null = null;
 
 interface Props {
   compact?: boolean;
-  muted?: boolean; // text-link style for secondary "or listen on" contexts
+  muted?: boolean;
+  podcast?: "cyber" | "ai";
 }
 
-export default function SubscribeButtons({ compact = false, muted = false }: Props) {
-  // muted: plain text links — clearly secondary to the email CTA
+export default function SubscribeButtons({ compact = false, muted = false, podcast = "cyber" }: Props) {
+  const spotifyUrl = podcast === "ai" ? AI_SPOTIFY_URL : CYBER_SPOTIFY_URL;
+  const appleUrl = podcast === "ai" ? AI_APPLE_URL : CYBER_APPLE_URL;
+
   if (muted) {
     return (
       <div className="flex flex-wrap items-center gap-4">
         <a
-          href={SPOTIFY_URL}
+          href={spotifyUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-[#1DB954] transition-colors"
@@ -27,15 +29,17 @@ export default function SubscribeButtons({ compact = false, muted = false }: Pro
           <SpotifyIcon />
           Spotify
         </a>
-        <a
-          href={APPLE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-[#a855f7] transition-colors"
-        >
-          <AppleIcon />
-          Apple Podcasts
-        </a>
+        {appleUrl && (
+          <a
+            href={appleUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-[#a855f7] transition-colors"
+          >
+            <AppleIcon />
+            Apple Podcasts
+          </a>
+        )}
       </div>
     );
   }
@@ -46,9 +50,8 @@ export default function SubscribeButtons({ compact = false, muted = false }: Pro
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-3">
-      {/* Spotify */}
       <a
-        href={SPOTIFY_URL}
+        href={spotifyUrl}
         target="_blank"
         rel="noopener noreferrer"
         className={`${base} bg-[#1DB954] text-black hover:bg-[#1ed760] hover:scale-105`}
@@ -57,18 +60,17 @@ export default function SubscribeButtons({ compact = false, muted = false }: Pro
         Spotify
       </a>
 
-      {/* Apple Podcasts */}
-      <a
-        href={APPLE_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`${base} bg-[#9333EA] text-white hover:bg-[#a855f7] hover:scale-105`}
-      >
-        <AppleIcon />
-        Apple Podcasts
-      </a>
-
-      {/* RSS — kept for podcast app discovery, hidden from UI */}
+      {appleUrl && (
+        <a
+          href={appleUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${base} bg-[#9333EA] text-white hover:bg-[#a855f7] hover:scale-105`}
+        >
+          <AppleIcon />
+          Apple Podcasts
+        </a>
+      )}
     </div>
   );
 }
@@ -85,14 +87,6 @@ function AppleIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-    </svg>
-  );
-}
-
-function RssIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19.01 7.38 20 6.18 20C4.98 20 4 19.01 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z" />
     </svg>
   );
 }

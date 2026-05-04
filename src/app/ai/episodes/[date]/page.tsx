@@ -103,7 +103,7 @@ export default async function AiEpisodePage({ params }: Props) {
           Enjoy the show? Subscribe to never miss an episode.
         </p>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <SubscribeButtons compact />
+          <SubscribeButtons compact podcast="ai" />
           <span className="text-[#333] text-xs hidden sm:block">or</span>
           <EmailSignup compact podcast="ai" />
         </div>
