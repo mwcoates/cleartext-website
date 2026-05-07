@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -80,6 +81,7 @@ export default function RootLayout({
         <noscript>
           <img height="1" width="1" style={{display:"none"}} alt="" src="https://px.ads.linkedin.com/collect/?pid=8972604&fmt=gif" />
         </noscript>
+        <Analytics />
       </body>
     </html>
   );
