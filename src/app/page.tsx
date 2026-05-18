@@ -54,7 +54,7 @@ export default async function Home({
                 />
               </div>
               <span className={`text-xs font-semibold tracking-wide transition-colors ${
-                isCyber ? "text-[#00ff87]" : "text-[#555]"
+                isCyber ? "text-[#00ff87]" : "text-[#999]"
               }`}>
                 Cyber
               </span>
@@ -82,7 +82,7 @@ export default async function Home({
                 </span>
               </div>
               <span className={`text-xs font-semibold tracking-wide transition-colors ${
-                !isCyber ? "text-[#00ff87]" : "text-[#555]"
+                !isCyber ? "text-[#00ff87]" : "text-[#999]"
               }`}>
                 AI
               </span>
@@ -103,7 +103,7 @@ export default async function Home({
                 <h1 className="text-4xl sm:text-5xl font-bold text-[#e8e8e8] leading-tight mb-3">
                   cleartext<span className="text-[#00ff87]">:Cyber</span><span className="text-[#00ff87] animate-pulse">_</span>
                 </h1>
-                <p className="text-base sm:text-lg text-[#666] mb-8 leading-relaxed max-w-lg mx-auto">
+                <p className="text-base sm:text-lg text-[#aaa] mb-8 leading-relaxed max-w-lg mx-auto">
                   Daily cybersecurity briefing for CISOs and security leaders —
                   synthesized from 16 leading publications every morning.
                 </p>
@@ -119,7 +119,7 @@ export default async function Home({
                 <h1 className="text-4xl sm:text-5xl font-bold text-[#e8e8e8] leading-tight mb-3">
                   cleartext<span className="text-[#00ff87]">:AI</span><span className="text-[#00ff87] animate-pulse">_</span>
                 </h1>
-                <p className="text-base sm:text-lg text-[#666] mb-8 leading-relaxed max-w-lg mx-auto">
+                <p className="text-base sm:text-lg text-[#aaa] mb-8 leading-relaxed max-w-lg mx-auto">
                   Daily briefing on AI advancements — frontier models, research breakthroughs,
                   and the infrastructure powering it all.
                 </p>
@@ -130,7 +130,7 @@ export default async function Home({
 
             <div className="flex items-center gap-4 max-w-xs mx-auto my-5">
               <div className="flex-1 h-px bg-[#1a1a1a]" />
-              <span className="text-xs text-[#444] whitespace-nowrap">or get it in your inbox</span>
+              <span className="text-xs text-[#777] whitespace-nowrap">or get it in your inbox</span>
               <div className="flex-1 h-px bg-[#1a1a1a]" />
             </div>
 
@@ -209,7 +209,7 @@ export default async function Home({
           <SubscribeButtons podcast={feed} />
           <div className="flex items-center gap-4 max-w-xs mx-auto my-5">
             <div className="flex-1 h-px bg-[#1a1a1a]" />
-            <span className="text-xs text-[#444] whitespace-nowrap">or get it in your inbox</span>
+            <span className="text-xs text-[#777] whitespace-nowrap">or get it in your inbox</span>
             <div className="flex-1 h-px bg-[#1a1a1a]" />
           </div>
           <div className="flex justify-center">
