@@ -33,37 +33,60 @@ export default async function Home({
       <section className="border-b border-[#1a1a1a]">
         <div className="max-w-5xl mx-auto px-6 pt-12 pb-6">
 
-          {/* Tab switcher */}
-          <div className="flex justify-center mb-8">
-            <div className="flex items-center border border-[#1a1a1a] rounded-xl p-1 bg-[#0a0a0a]">
-              <Link
-                href="/?feed=cyber"
-                className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${
-                  isCyber
-                    ? "bg-[#00ff87] text-[#080808]"
-                    : "text-[#666] hover:text-[#aaa]"
-                }`}
-              >
+          {/* Podcast picker */}
+          <div className="flex justify-center gap-4 mb-10">
+            {/* Cyber */}
+            <Link
+              href="/?feed=cyber"
+              className={`group flex flex-col items-center gap-2 transition-all ${
+                isCyber ? "opacity-100" : "opacity-40 hover:opacity-70"
+              }`}
+            >
+              <div className={`rounded-2xl overflow-hidden transition-all ${
+                isCyber
+                  ? "ring-2 ring-[#00ff87] ring-offset-2 ring-offset-[#080808] shadow-[0_0_20px_rgba(0,255,135,0.25)]"
+                  : "ring-1 ring-[#1a1a1a] group-hover:ring-[#333]"
+              }`}>
+                <img
+                  src="https://storage.googleapis.com/cleartext-podcast/cleartext_podcast_logo_v2.png"
+                  alt="Cleartext Cyber"
+                  className="w-20 h-20 sm:w-24 sm:h-24 object-cover block"
+                />
+              </div>
+              <span className={`text-xs font-semibold tracking-wide transition-colors ${
+                isCyber ? "text-[#00ff87]" : "text-[#555]"
+              }`}>
                 Cyber
-              </Link>
-              <Link
-                href="/?feed=ai"
-                className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 ${
-                  !isCyber
-                    ? "bg-[#00ff87] text-[#080808]"
-                    : "text-[#666] hover:text-[#aaa]"
-                }`}
-              >
-                AI
-                <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
-                  !isCyber
-                    ? "bg-[#080808]/20 text-[#080808]/60"
-                    : "bg-[#00ff87]/10 text-[#00ff87]/60 border border-[#00ff87]/20"
-                }`}>
+              </span>
+            </Link>
+
+            {/* AI */}
+            <Link
+              href="/?feed=ai"
+              className={`group flex flex-col items-center gap-2 transition-all ${
+                !isCyber ? "opacity-100" : "opacity-40 hover:opacity-70"
+              }`}
+            >
+              <div className={`rounded-2xl overflow-hidden transition-all relative ${
+                !isCyber
+                  ? "ring-2 ring-[#00ff87] ring-offset-2 ring-offset-[#080808] shadow-[0_0_20px_rgba(0,255,135,0.25)]"
+                  : "ring-1 ring-[#1a1a1a] group-hover:ring-[#333]"
+              }`}>
+                <img
+                  src="https://storage.googleapis.com/cleartext-podcast/ai/ai_podcast_logo.png"
+                  alt="Cleartext AI"
+                  className="w-20 h-20 sm:w-24 sm:h-24 object-cover block"
+                />
+                <span className="absolute top-1.5 right-1.5 text-[9px] font-bold uppercase tracking-wider bg-[#00ff87] text-[#080808] px-1.5 py-0.5 rounded-full leading-none">
                   Beta
                 </span>
-              </Link>
-            </div>
+              </div>
+              <span className={`text-xs font-semibold tracking-wide transition-colors ${
+                !isCyber ? "text-[#00ff87]" : "text-[#555]"
+              }`}>
+                AI
+              </span>
+            </Link>
           </div>
 
           {/* Hero — centered */}
